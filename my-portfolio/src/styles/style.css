@@ -1,0 +1,172 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    color: #000;
+}
+
+header {
+    text-align: center;
+    padding: 20px;
+    background-color: transparent;
+}
+
+header img {
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+}
+
+header h1 {
+    margin: 10px 0;
+    font-size: 2.5em;
+}
+
+header p {
+    font-size: 1.2em;
+}
+
+header a:hover {
+    text-decoration: underline;
+    color: #00008b;
+    background-color: #add8e6;
+}
+
+nav {
+    background-color: transparent;
+    padding: 10px 0;
+    text-align: center;
+}
+
+nav a {
+    color: #000;
+    text-decoration: underline;
+    padding: 10px 20px;
+    margin: 0 15px;
+    font-size: 1.1em;
+}
+
+nav a:hover {
+    background-color: #575757;
+    color: #fff;
+    text-decoration: underline;
+}
+
+section {
+    padding: 30px;
+    background-color: #a5d6a7;
+    margin: 20px;
+    border-radius: 10px;
+}
+
+.bio p {
+    font-size: 1.2em;
+    margin: 10px 0;
+}
+
+.bio a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.bio a:hover {
+    text-decoration: underline;
+}
+
+.skills ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.skills li {
+    padding: 5px 0;
+}
+
+.progress-bar {
+    width: 100%;
+    background-color: #ddd;
+    position: relative;
+    margin-top: 20px;
+    margin-bottom: 30px;
+    height: 25px;
+    border-radius: 10px;
+}
+
+.progress-bar div {
+    height: 100%;
+    background-color: #388E3C;
+    text-align: center;
+    color: white;
+    line-height: 15px;
+    position: relative;
+    border-radius: 10px;
+}
+
+.progress-text {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1em;
+    color: #388e3c;
+}
+
+.contact-form input, .contact-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.contact-form button {
+    padding: 10px 20px;
+    background-color: #4caf50;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+}
+
+.contact-form button:hover {
+    background-color: #45a049;
+}
+
+.copy-notification {
+    margin-top: 0;
+    font-size: 1.1em;
+    display: none;
+    white-space: nowrap;
+    position: absolute;
+}
+
+#copy-notification-header {
+    color: #00008b;
+    opacity: 0.5;
+}
+
+#copy-notification-about,
+#copy-phone-notification {
+    color: #fff;
+    opacity: 0.8;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: rgba(0,0, 0, 0.7);
+    color: #fff;
+}
+
+footer a {
+    color: #fff;
+    text-decoration: underline;
+}
+
+footer a:hover {
+    color: #00008b;
+    background-color: #add8e6;
+    text-decoration: underline;
+}
