@@ -10,12 +10,12 @@ body {
 }
 
 .main-container {
-    width: 100%;
-    max-width: 960px;
-    padding: 2rem 1rem;
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
     display: flex;
     flex-direction: column;
-    align-items: stretch;
+    align-items: center;
 }
 
 .top-controls {
