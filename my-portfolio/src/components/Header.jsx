@@ -8,7 +8,6 @@ const Header = () => {
 
     return (
         <header>
-            <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Profilbild" />
             <h1>Steven Schwarz</h1>
             <p>Webentwickler</p>
             <p>

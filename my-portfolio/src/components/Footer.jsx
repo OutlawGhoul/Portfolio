@@ -1,14 +1,15 @@
 import React from "react";
+import { useAppContext } from "../context/AppContext";
+import translations from "../i18n";
 
 const Footer = () => {
+    const { language } = useAppContext();
+    const year = new Date().getFullYear();
+    const t = translations[language];
+
     return (
-        <footer style={{
-            textAlign: 'center',
-            padding: '20px',
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-            color: '#fff'
-        }}>
-            <p>&copy; 2025 Steven Schwarz | <a href="path/to/Lebenslauf.pdf" target="_blank">Lebenslauf (PDF)</a></p>
+        <footer>
+            <p>© {year} {t.copyright}</p>
         </footer>
     );
 };

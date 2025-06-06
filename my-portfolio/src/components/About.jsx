@@ -1,33 +1,22 @@
 import React from "react";
+import { useAppContext } from "../context/AppContext";
+import translations from "../i18n";
 
 const About = () => {
-    const copyEmail = () => {
-        navigator.clipboard.writeText("steven.schwarz0724@gmail.com");
-        alert("E-Mail-Adresse kopiert!");
-    };
-
-    const copyPhone = () => {
-        navigator.clipboard.writeText("+41 78 868 84 81");
-        alert("Telefonnummer kopiert!");
-    };
+    const { language } = useAppContext();
+    const t = translations[language];
 
     return (
         <section id="about">
-            <h2>Über mich</h2>
+            <h2>{t.about}</h2>
             <div className="bio">
                 <p><strong>Name:</strong> Steven Schwarz</p>
-                <p><strong>Alter:</strong> 23 Jahre</p>
-                <p><strong>Standort:</strong> Zürich, Schweiz</p>
-                <p><strong>Erfahrung:</strong> 7 Monate</p>
-                <p><strong>Profil:</strong> Webentwicklung (Full-Stack)</p>
-                <p>
-                    <strong>E-Mail:</strong>{' '}
-                    <a href="#" onClick={copyEmail}>steven.schwarz0724@gmail.com</a>
-                </p>
-                <p>
-                    <strong>Telefon:</strong>{' '}
-                    <a href="#" onClick={copyPhone}>+41 78 868 84 81</a>
-                </p>
+                <p><strong>{language === 'de' ? 'Alter' : 'Age'}:</strong> 23 {language === 'de' ? 'Jahre' : 'years old'}</p>
+                <p><strong>{language === 'de' ? 'Standort' : 'Location'}:</strong> Zürich, Schweiz</p>
+                <p><strong>{language === 'de' ? 'Erfahrung' : 'Experience'}:</strong> 7 {language === 'de' ? 'Monate' : 'months'}</p>
+                <p><strong>{language === 'de' ? 'Profil' : 'Profile'}:</strong> {language === 'de' ? 'Webentwicklung (Full-Stack)' : 'Web Developer (Full-Stack)'}</p>
+                <p><strong>{t.email}:</strong> <a href="mailto:steven.schwarz0724@gmail.com">steven.schwarz0724@gmail.com</a></p>
+                <p><strong>{language === 'de' ? 'Telefon' : 'Phone'}:</strong> <a href="tel: +41788688481">+41 78 868 84 81</a></p>
             </div>
         </section>
     );

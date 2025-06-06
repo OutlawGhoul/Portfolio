@@ -1,45 +1,55 @@
 import React, { useState } from "react";
+import { useAppContext } from "../context/AppContext";
+import translations from "../i18n";
 
 const ContactForm = () => {
-    const [form, setForm] = useState({ name: '', email: '', message: '' });
+    const { language } = useAppContext();
+    const t = translations[language];
 
-    const handleChange = (e) =>
-        setForm({ ...form, [e.target.name]: e.target.value });
+    const [form, setForm] = useState({ name: '', email: '', message: '' });
+    const [submitted, setSubmitted] = useState(false);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setForm({ ...form, [name]: value });
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        alert("Nachricht gesendet! (soon)");
+        console.log("Form submitted:", form);
+        setSubmitted(true);
         setForm({ name: '', email: '', message: '' });
     };
 
     return (
         <section id="contact">
-            <h2>Kontakt</h2>
-            <form className="contact-form" onSubmit={handleSubmit}>
+            <h2>{t.contact}</h2>
+            <form onSubmit={handleSubmit}>
                 <input
                     type="text"
                     name="name"
-                    placeholder="Name"
-                    required
+                    placeholder={t.name}
                     value={form.name}
                     onChange={handleChange}
+                    required
                 />
                 <input
                     type="email"
                     name="email"
-                    placeholder="Email"
-                    required
+                    placeholder={t.email}
                     value={form.email}
                     onChange={handleChange}
+                    required
                 />
                 <textarea
                     name="message"
-                    placeholder="Nachricht"
-                    required
+                    placeholder={t.message}
                     value={form.message}
                     onChange={handleChange}
-                ></textarea>
-                <button type="submit">Abesenden</button>
+                    required
+                />
+                <button type="submit">{t.submit}</button>
+                {submitted && <p>{t.success}</p>}
             </form>
         </section>
     );
