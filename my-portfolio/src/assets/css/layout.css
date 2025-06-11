@@ -1,26 +1,43 @@
 body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', sans-serif;
+    display: flex;
     background-color: var(--bg);
     color: var(--text);
-    display: flex;
-    justify-content: center;
-    min-height: 100vh;
+    font-family: "Poppins", sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.main-container {
-    max-width: 900px;
-    margin: 2rem auto;
-    padding: 0 1rem;
+.layout {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--bg);
+}
+
+.sidebar {
+    width: 12%;
+    background-color: var(--card-bg);
+    font-size: 20px;
+    padding: 2rem 1rem;
+    text-align: center;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    overflow-y: auto;
+    box-shadow: 2px 0 10px rgba(0, green0, 0, 0.05);
+}
+
+.main-content {
+    margin-left: calc(100% - 15%);
+    padding: 2rem;
+    width: calc(100%);
+    min-height: 100vh;
+    background-color: var(--bg);
+}
+
+.main-inner {
+    max-width: 1000px;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
-    align-items: center;
-}
-
-.top-controls {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+    gap: 3rem;
 }

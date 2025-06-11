@@ -2,22 +2,34 @@ import React from "react";
 import { useAppContext } from "../context/AppContext";
 import translations from "../i18n";
 import profilePic from "../assets/images/Profilbild.png";
+import ContactItem from "./ContactItem";
+import SocialLinks from "./SocialLinks";
 
 const About = () => {
     const { language } = useAppContext();
     const t = translations[language];
 
     return (
-        <section id="about">
+        <section id="about" className="about-section">
+            <div className="about-content">
             <h2>{t.about}</h2>
-            <div className="bio">
                 <p><strong>Name:</strong> Steven Schwarz</p>
-                <p><strong>{language === 'de' ? 'Alter' : 'Age'}:</strong> 23 {language === 'de' ? 'Jahre' : 'years old'}</p>
-                <p><strong>{language === 'de' ? 'Standort' : 'Location'}:</strong> Zürich, Schweiz</p>
-                <p><strong>{language === 'de' ? 'Erfahrung' : 'Experience'}:</strong> 7 {language === 'de' ? 'Monate' : 'months'}</p>
-                <p><strong>{language === 'de' ? 'Profil' : 'Profile'}:</strong> {language === 'de' ? 'Webentwicklung (Full-Stack)' : 'Web Developer (Full-Stack)'}</p>
-                <p><strong>{t.email}:</strong> <a href="mailto:steven.schwarz0724@gmail.com">steven.schwarz0724@gmail.com</a></p>
-                <p><strong>{language === 'de' ? 'Telefon' : 'Phone'}:</strong> <a href="tel: +41788688481">+41 78 868 84 81</a></p>
+                <p><strong>{t.age}:</strong> 23 {t.yearsOld}</p>
+                <p><strong>{t.location}:</strong> Zürich, Schweiz</p>
+                <p><strong>{t.expirience}:</strong> 7 {t.months}</p>
+                <p><strong>{t.profile}:</strong> {t.webdev}</p>
+                <ContactItem label="Telefon" value="+41 78 868 84 81" icon="📞" />
+                <ContactItem label="E-Mail" value="steven.schwarz@twofold.swiss" icon="✉️" />
+                <div className="cv-button">
+                    <a href="/Lebenslauf.pdf" target="_blank" rel="noopener noreferrer">
+                        <button>Lebenslauf</button>
+                    </a>
+                </div>
+
+                <SocialLinks />
+            </div>
+            <div className="about-image-container">
+                <img src={profilePic} alt="Profilbild" className="about-image" />
             </div>
         </section>
     );

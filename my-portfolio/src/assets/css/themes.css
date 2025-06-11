@@ -1,15 +1,15 @@
 :root {
-    --bg: #fff;
-    --text: #222;
-    --card-bg: #fff;
-    --accent: #007bff;
-    --accent-hover: #0056b3;
+    --bg: #f0f2f5;
+    --text: #1f1f1f;
+    --card-bg: #ffffff;
+    --accent: #6c63ff;
+    --accent-hover: #574fd6;
 }
 
 body.dark {
     --bg: #121212;
-    --text: #eee;
+    --text: #e0e0e0;
     --card-bg: #1e1e1e;
-    --accent: #339af0;
-    --accent-hover: #1c7ed6;
+    --accent: #9b78fa;
+    --accent-hover: #7d5fe0;
 }

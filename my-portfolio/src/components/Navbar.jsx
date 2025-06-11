@@ -21,7 +21,6 @@ const Navbar = () => {
             <div className="nav-right">
                 <a href="#about">{t.about}</a>
                 <a href="#skills">{t.skills}</a>
-                <a href="#contact">{t.contact}</a>
                 <LanguageToggle />
                 <ThemeToggle />
             </div>

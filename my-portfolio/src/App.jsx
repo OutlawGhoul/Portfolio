@@ -1,33 +1,14 @@
 import React from 'react';
 import { AppProvider } from './context/AppContext';
-import Header from './components/Header';
-import Navbar from './components/Navbar';
-import About from './components/About';
-import Skills from './components/Skills';
-import ContactForm from './components/ContactForm';
-import Footer from './components/Footer';
+import Sidebar from './components/Sidebar';
+import MainContent from './components/MainContent';
 import './assets/css/index.css';
 
 const App = () => (
   <AppProvider>
-    <main className='main-container'>
-      <Navbar />
-      <Header />
-      <div className='about-section'>
-        <About />
-        <div className='about-image-container'>
-          <img
-            src="\assets\images\Profilbild.png"
-            alt="Profilbild"
-            className='about-image'
-          />
-        </div>
-      </div>
-      <Skills />
-      <ContactForm />
-      <Footer />
-    </main>
+      <Sidebar />
+      <MainContent />
   </AppProvider>
-)
+);
 
 export default App;

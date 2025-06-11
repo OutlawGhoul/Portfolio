@@ -1,4 +1,5 @@
 import React from "react";
+import ContactItem from "./ContactItem";
 
 const Header = () => {
     const copyEmail = () => {
@@ -10,9 +11,7 @@ const Header = () => {
         <header>
             <h1>Steven Schwarz</h1>
             <p>Webentwickler</p>
-            <p>
-                <a href="#" onClick={copyEmail}>steven.schwarz0724@gmail.com</a>
-            </p>
+            <ContactItem label="E-Mail" value="steven.schwarz0724@gmail.com" />
         </header>
     );
 };
