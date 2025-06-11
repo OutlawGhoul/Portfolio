@@ -1,6 +1,7 @@
 import React from "react";
 import { useAppContext } from "../context/AppContext";
 import translations from "../i18n";
+import profilePic from "../assets/images/Profilbild.png";
 
 const About = () => {
     const { language } = useAppContext();

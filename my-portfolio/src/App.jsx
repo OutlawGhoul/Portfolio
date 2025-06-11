@@ -17,7 +17,7 @@ const App = () => (
         <About />
         <div className='about-image-container'>
           <img
-            src="https://www.w3schools.com/w3images/avatar2.png"
+            src="\assets\images\Profilbild.png"
             alt="Profilbild"
             className='about-image'
           />
