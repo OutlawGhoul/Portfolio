@@ -70,7 +70,7 @@ footer {
 }
 
 .about-content {
-    flex: 1 1 400px;
+    flex: 0 0 270px;
 }
 
 .about-content p {
@@ -78,8 +78,8 @@ footer {
 }
 
 .about-image-container {
-    margin-top: 2.5rem;
-    flex: 0 0 350px;
+    margin-top: 3.5rem;
+    flex: 0 0 335px;
     max-width: 800px;
 }
 
