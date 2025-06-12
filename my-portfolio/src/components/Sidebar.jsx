@@ -47,6 +47,8 @@ const Sidebar = () => {
                     <ul>
                         <li><a href="#about">{t.about}</a></li>
                         <li><a href="#skills">{t.skills}</a></li>
+                        <li><a href="#bio">{t.titleBio}</a></li>
+                        <li><a href="#expirience">{t.titleExpirience}</a></li>
                     </ul>
                 </nav>
             </aside>

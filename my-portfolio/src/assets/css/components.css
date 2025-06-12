@@ -283,6 +283,14 @@ button:hover {
     line-height: 1.6;
 }
 
+.accent-section {
+    background-color: var(--accent-bg);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+}
+
 .animate-bar {
     animation: fillBar 1s ease-out forwards;
 }

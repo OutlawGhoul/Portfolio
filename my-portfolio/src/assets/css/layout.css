@@ -27,7 +27,7 @@ body {
 }
 
 .main-content {
-    margin-left: calc(100% - 15%);
+    margin-left: calc(100% - 50%);
     padding: 2rem;
     width: calc(100%);
     min-height: 100vh;
