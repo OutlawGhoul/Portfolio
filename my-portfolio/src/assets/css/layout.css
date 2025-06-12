@@ -28,7 +28,7 @@ body {
 
 .main-content {
     margin-left: calc(100vw - 90vw);
-    margin-top: calc(100vh - 62vh);
+    margin-top: calc(100vh - 80vh);
     padding: 2rem;
     width: 100vw;
     min-height: 100vh;
