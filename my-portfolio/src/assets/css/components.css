@@ -53,19 +53,24 @@ footer {
 /* --- About Section --- */
 .about-section {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: flex-start;
+    width: 40vw;
     flex-wrap: wrap;
-    gap: 3rem;
+    gap: 2rem;
     margin-bottom: 3rem;
     text-align: left;
 }
 
 .about-section > * {
     flex: 1 1 300px;
-    max-width: 600px;
+    max-width: 1000px;
     margin-bottom: 2rem;
-    line-height: 2.5;
+    line-height: 3;
+}
+
+.about-content {
+    flex: 1 1 400px;
 }
 
 .about-content p {
@@ -74,8 +79,8 @@ footer {
 
 .about-image-container {
     margin-top: 2.5rem;
-    flex: 1 1 250px;
-    max-width: 300px;
+    flex: 0 0 350px;
+    max-width: 800px;
 }
 
 .about-image {
@@ -186,18 +191,36 @@ button:hover {
 
 /* --- Sidebar --- */
 .sidebar {
-    width: 260px;
+    width: 10vw;
+    height: 100vh;
     background-color: var(--card-bg);
     padding: 2rem 1rem;
     text-align: center;
     position: fixed;
     top: 0;
-    bottom: 0;
     left: 0;
     overflow-y: auto;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
     z-index: 1000;
     transition: transform 0.3s ease;
+}
+
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 1050;
+    cursor: pointer;
+    display: none;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.active {
+    display: block;
+    opacity: 1;
 }
 
 .profile-img {
@@ -243,7 +266,7 @@ button:hover {
 }
 
 .top-controls {
-    position: absolute;
+    position: fixed;
     top: 1rem;
     right: 1rem;
     display: flex;
@@ -323,25 +346,73 @@ button:hover {
 @media (max-width: 768px) {
     .mobile-toggle {
         display: block;
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        background-color: var(--card-bg);
+        color: var(--text);
+        padding: 0.5rem;
+        border-radius: 5px;
+        border: none;
+        z-index: 1200;
+        font-size: 1.5rem;
+        cursor: pointer;
     }
 
     .sidebar {
+        position: fixed;
         transform: translateX(-100%);
-        width: 80vw;
-        max-width: 300px;
+        width: 100vw;
+        height: 100vh;
+        background-color: var(--card-bg);
+        padding: 2rem 1rem;
+        top: 0;
+        left: 0;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+        overflow-y: auto;
+        transition: transform 0.3s ease;
+        border-radius: 0;
+        z-index: 1100;
     }
 
     .sidebar.open {
-        transform: translateX(0);
+        width: 90vw;
+        height: 90vh;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+        border-radius: 12px;
+        overflow-y: auto;
+        z-index: 1100;
     }
 
     .main-content {
-        margin-left: 0 !important;
-        padding: 2rem 1rem;
+        margin-left: 0;
+        position: relative;
+        z-index: 1;
     }
 
     .top-controls {
         top: 1rem;
         right: 1rem;
+    }
+
+    .about-section {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .about-image-container {
+        order: -1;
+        padding-top: 3rem;
+        margin-bottom: 4.5rem;
+        flex: none;
+    }
+
+    .about-content {
+        order: 0;
+        flex: none;
+        max-width: 100%;
     }
 }

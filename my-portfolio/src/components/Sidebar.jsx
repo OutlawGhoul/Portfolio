@@ -17,6 +17,11 @@ const Sidebar = () => {
                 {isOpen ? <FaTimes /> : <FaBars />}
             </button>
 
+            {/* Overlay */}
+            {isOpen && (
+                <div className="sidebar-overlay" onClick={() => setIsOpen(false)} />
+            )}
+
             {/* Sidebar */}
             <aside className={`sidebar${isOpen ? 'open' : ''}`}>
                 <div className="profile">
@@ -45,10 +50,10 @@ const Sidebar = () => {
 
                 <nav className="sidebar-nav">
                     <ul>
-                        <li><a href="#about">{t.about}</a></li>
-                        <li><a href="#skills">{t.skills}</a></li>
-                        <li><a href="#bio">{t.titleBio}</a></li>
-                        <li><a href="#expirience">{t.titleExpirience}</a></li>
+                        <li><a href="#about" onClick={() => setIsOpen(false)}>{t.about}</a></li>
+                        <li><a href="#skills" onClick={() => setIsOpen(false)}>{t.skills}</a></li>
+                        <li><a href="#bio" onClick={() => setIsOpen(false)}>{t.titleBio}</a></li>
+                        <li><a href="#expirience" onClick={() => setIsOpen(false)}>{t.titleExpirience}</a></li>
                     </ul>
                 </nav>
             </aside>

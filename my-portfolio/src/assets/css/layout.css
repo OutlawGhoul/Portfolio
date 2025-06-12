@@ -13,23 +13,24 @@ body {
 }
 
 .sidebar {
-    width: 12%;
-    background-color: var(--card-bg);
-    font-size: 20px;
-    padding: 2rem 1rem;
-    text-align: center;
     position: fixed;
     top: 0;
-    bottom: 0;
     left: 0;
+    width: 15vw;
+    height: 100vh;
+    background-color: var(--card-bg);
+    padding: 2rem 1rem;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
     overflow-y: auto;
-    box-shadow: 2px 0 10px rgba(0, green0, 0, 0.05);
+    z-index: 1000;
+    transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease, top 0.3s ease, left 0.3s ease;
 }
 
 .main-content {
-    margin-left: calc(100% - 50%);
+    margin-left: calc(100vw - 90vw);
+    margin-top: calc(100vh - 62vh);
     padding: 2rem;
-    width: calc(100%);
+    width: 100vw;
     min-height: 100vh;
     background-color: var(--bg);
 }
@@ -40,4 +41,6 @@ body {
     display: flex;
     flex-direction: column;
     gap: 3rem;
+    padding-right: 15%;
+    font-size: 800;
 }
