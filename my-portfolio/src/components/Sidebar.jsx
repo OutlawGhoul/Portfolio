@@ -30,7 +30,7 @@ const Sidebar = () => {
 
                     <div className="social-links">
                         <a
-                            href="https://www.linkedin.com/in/steven-schwarz-a45326323"
+                            href="https://www.linkedin.com/in/steven-rene-schwarz"
                             target="_blank"
                             rel="noopener noreferrer"
                             aria-label="LinkedIn"
