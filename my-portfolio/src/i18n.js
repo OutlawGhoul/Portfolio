@@ -22,7 +22,7 @@ const translations = {
         titleExpirience: "Berufserfahrung",
         buildup: "Aufbautraining",
         today: "Heute",
-        expirienceDescription: "Aufbautraining nach längerer Arbeitspause durch Vaterschaft.",
+        expirienceDescription: "Aufbautraining nach längerer Arbeitspause auf Grund von Vaterschaft.",
     },
     en: {
         about: "About me",

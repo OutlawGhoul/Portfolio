@@ -1,19 +1,35 @@
-import React, { useState } from "react";
-import { FaBars, FaTimes, FaLinkedin, FaGithub } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import { FaBars, FaTimes } from "react-icons/fa";
 import { useAppContext } from "../context/AppContext";
-import profilePic from "../assets/images/Profilbild.png";
+import ThemeToggle from "./ThemeToggle";
+import LanguageToggle from "./LanguageToggle";
+import SidebarNav from "./SidebarNav";
+import profilePic from "../assets/images/Profilbild - Kopie.png";
+import SocialLinks from "./SocialLinks";
 import translations from "../i18n";
 
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const { language } = useAppContext();
     const t = translations[language];
+
     const toggleSidebar = () => setIsOpen(!isOpen);
+
+    useEffect(() => {
+        document.body.style.overflow = isOpen ? "hidden" : "auto";
+        return () => (document.body.style.overflow = "auto");
+    }, [isOpen]);
 
     return (
         <>
-            {/* Toggle-Button für Mobile */}
-            <button className="mobile-toggle" onClick={toggleSidebar}>
+            {/* Mobile Toggle Button */}
+            <button
+                className="mobile-toggle"
+                onClick={toggleSidebar}
+                aria-label={isOpen ? "Close sidebar" : "Open sidebar"}
+                aria-expanded={isOpen}
+                aria-controls="sidebar"
+            >
                 {isOpen ? <FaTimes /> : <FaBars />}
             </button>
 
@@ -23,39 +39,24 @@ const Sidebar = () => {
             )}
 
             {/* Sidebar */}
-            <aside className={`sidebar${isOpen ? 'open' : ''}`}>
+            <aside
+                id="sidebar"
+                className={`sidebar ${isOpen ? 'open' : ''}`}
+                role="navigation"
+                aria-label="Sidebar navigation"
+            >
+            <div className="top-controls">
+                <LanguageToggle />
+                <ThemeToggle />
+            </div>
+
                 <div className="profile">
                     <img src={profilePic} alt="Profil" className="profile-img" />
                     <h1 className="profile-name">Steven Schwarz</h1>
-
-                    <div className="social-links">
-                        <a
-                            href="https://www.linkedin.com/in/steven-rene-schwarz"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label="LinkedIn"
-                        >
-                            <FaLinkedin />
-                        </a>
-                        <a
-                            href="https://github.com/OutlawGhoul"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label="GitHub"
-                        >
-                            <FaGithub />
-                        </a>
-                    </div>
+                    <SocialLinks />
                 </div>
 
-                <nav className="sidebar-nav">
-                    <ul>
-                        <li><a href="#about" onClick={() => setIsOpen(false)}>{t.about}</a></li>
-                        <li><a href="#bio" onClick={() => setIsOpen(false)}>{t.titleBio}</a></li>
-                        <li><a href="#expirience" onClick={() => setIsOpen(false)}>{t.titleExpirience}</a></li>
-                        <li><a href="#skills" onClick={() => setIsOpen(false)}>{t.skills}</a></li>
-                    </ul>
-                </nav>
+                <SidebarNav onLinkClick={() => setIsOpen(false)} t ={t} />
             </aside>
         </>
     );
