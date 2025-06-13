@@ -6,7 +6,7 @@ const SocialLinks = () => {
         {
             name: "LinkedIn",
             icon: <FaLinkedin size={28} />,
-            url: "https://www.linkedin.com/in/steven-schwarz",
+            url: "https://www.linkedin.com/in/steven-schwarz-a45326323",
         },
         {
             name: "GitHub",
