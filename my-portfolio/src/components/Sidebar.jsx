@@ -30,7 +30,7 @@ const Sidebar = () => {
 
                     <div className="social-links">
                         <a
-                            href="https://www.linkedin.com/in/steven-schwarz"
+                            href="https://www.linkedin.com/in/steven-schwarz-a45326323"
                             target="_blank"
                             rel="noopener noreferrer"
                             aria-label="LinkedIn"
@@ -51,9 +51,9 @@ const Sidebar = () => {
                 <nav className="sidebar-nav">
                     <ul>
                         <li><a href="#about" onClick={() => setIsOpen(false)}>{t.about}</a></li>
-                        <li><a href="#skills" onClick={() => setIsOpen(false)}>{t.skills}</a></li>
                         <li><a href="#bio" onClick={() => setIsOpen(false)}>{t.titleBio}</a></li>
                         <li><a href="#expirience" onClick={() => setIsOpen(false)}>{t.titleExpirience}</a></li>
+                        <li><a href="#skills" onClick={() => setIsOpen(false)}>{t.skills}</a></li>
                     </ul>
                 </nav>
             </aside>
