@@ -41,7 +41,7 @@ ul {
 
 h1, h2, h3, h4, h5, h6 {
     font-weight: 700;
-    line-height: 1.2;
+    line-height: 1.;
 }
 
 p {
@@ -125,15 +125,22 @@ p {
 
 .main-content {
     margin-left: 15vw;
+    width: calc(100vw - 21vw);
     padding: 2rem;
-    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     transition: margin 0.3s ease;
 }
 
 .main-inner {
     max-width: 1200px;
+    width: 100%;
     margin: 0 auto;
+    padding-top: 4rem;
+    font-size: 1.2rem;
 }
+
 
 .top-controls {
     position: fixed;
@@ -169,10 +176,17 @@ p {
 }
 
 .about-section {
+    width: 100%;
+    max-width: 100%;
     display: flex;
     align-items: center;
     gap: 2rem;
-    margin-bottom: 3rem;
+    margin-bottom: 6rem;
+    flex-wrap: wrap;
+}
+
+.about-content {
+    flex: 1 1 300px;
 }
 
 .profile-img {
@@ -188,10 +202,16 @@ p {
 }
 
 .bio-section {
-    margin-bottom: 3rem;
+    text-align: center;
+    margin-bottom: 6rem;
+}
+
+#skills {
+    text-align: center;
 }
 
 .skill-block {
+    text-align: left !important;
     margin-bottom: 1.5rem;
 }
 
@@ -211,11 +231,12 @@ p {
 }
 
 .animate-bar {
-    animation: var(--target-width);
+    width: var(--target-width);
 }
 
 .expirience-section {
-    margin-bottom: 3rem;
+    text-align: center;
+    margin-bottom: 6rem;
 }
 
 .expirience-section h2 {
@@ -369,8 +390,11 @@ body.dark .accent-section {
     .main-content {
         margin-left: 0;
         padding-top: 6rem;
+        width: 100%;
         position: relative;
         z-index: 1;
+        display: flex;
+        justify-content: center;
     }
 
     .top-controls {

@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useAppContext } from "../context/AppContext";
-import animateProgressBars from "../animateProgressBars";
+import useProgressBarAnimation from "../useProgressBarAnimation";
 import translations from "../i18n";
 
 const skillsData = [
@@ -16,9 +16,8 @@ const Skills = () => {
     const { language } = useAppContext();
     const t = translations[language];
 
-    useEffect(() => {
-        animateProgressBars();
-    }, []);
+    // Animation
+    useProgressBarAnimation();
 
     return (
         <section id="skills">
@@ -30,7 +29,7 @@ const Skills = () => {
                         <div className="progress-bar">
                             <div
                                 className="progress-fill"
-                                data-target={`${skill.level}%`}
+                                data-width={`${skill.level}%`}
                             ></div>
                         </div>
                     </div>
