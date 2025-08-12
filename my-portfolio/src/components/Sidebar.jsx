@@ -4,7 +4,7 @@ import { useAppContext } from "../context/AppContext";
 import ThemeToggle from "./ThemeToggle";
 import LanguageToggle from "./LanguageToggle";
 import SidebarNav from "./SidebarNav";
-import profilePic from "../assets/images/Profilbild - Kopie.png";
+import profilePic from "/public/Profilbild.jpg";
 import SocialLinks from "./SocialLinks";
 import translations from "../i18n";
 

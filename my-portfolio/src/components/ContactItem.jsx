@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const ContactItem = ({ label, value, icon = "" }) => {
+const ContactItem = ({ value, icon = "" }) => {
     const [copied, setCopied] = useState(false);
 
     const copyToClipboard = () => {
@@ -15,7 +15,6 @@ const ContactItem = ({ label, value, icon = "" }) => {
             onClick={copyToClipboard}
             style={{
                 cursor: "pointer",
-                color: "var(--accent)",
                 fontWeight: "bold",
                 marginBottom: "0.5rem",
                 userSelect: "none",
@@ -31,7 +30,6 @@ const ContactItem = ({ label, value, icon = "" }) => {
                         top: "-1.2rem",
                         left: 0,
                         fontSize: "0.75rem",
-                        color: "var(--text)",
                     }}
                 >
                     ✅ kopiert!

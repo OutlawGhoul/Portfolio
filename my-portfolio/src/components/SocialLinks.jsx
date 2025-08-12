@@ -15,11 +15,6 @@ const SocialLinks = () => {
         },
     ];
 
-    const handleCopy = (url) => {
-        navigator.clipboard.writeText(url);
-        alert(`${url} kopiert!`);
-    };
-
     return (
         <div className="social-links">
             {links.map((link) => (

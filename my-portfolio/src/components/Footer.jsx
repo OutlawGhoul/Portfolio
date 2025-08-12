@@ -1,17 +1,21 @@
 import React from "react";
-import { useAppContext } from "../context/AppContext";
-import translations from "../i18n";
+import ContactItem from "./ContactItem";
 import SocialLinks from "./SocialLinks";
 
 const Footer = () => {
-    const { language } = useAppContext();
-    const year = new Date().getFullYear();
-    const t = translations[language];
 
     return (
         <footer>
-            <p>© {year} {t.copyright}</p>
-            <SocialLinks />
+            <div className="footer-inner">
+                <div className="footer-contacts">
+                    <ContactItem label="Telefon" value="+41 78 868 84 81" icon="📞" />
+                    <br />
+                    <ContactItem label="E-Mail" value="steven.schwarz@twofold.swiss" icon="✉️" />
+                </div>
+                <div className="social-links">
+                    <SocialLinks />
+                </div>
+            </div>
         </footer>
     );
 };

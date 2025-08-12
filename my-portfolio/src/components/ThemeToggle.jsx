@@ -5,8 +5,15 @@ const ThemeToggle = () => {
     const { darkMode, setDarkMode } = useAppContext();
 
     return (
-        <button onClick={() => setDarkMode(!darkMode)}>
-            {darkMode ? '🌞' : '🌙'}
+        <button
+            type="button"
+            className={`theme-toggle ${darkMode ? "is-on" : ""}`}
+            onClick={() => setDarkMode(!darkMode)}
+            role="switch"
+            aria-checked={darkMode}
+            aria-label={darkMode ? "Dark Mode aktiviert" : "Dark Mode deaktiviert"}
+        >
+            <span className="theme-toggle_thumb" />
         </button>
     );
 };
