@@ -14,14 +14,14 @@ const skillsData = [
 
 const Skills = () => {
     const { language } = useAppContext();
-    const t = translations[language];
+    const lang = translations[language];
 
     // Animation
     useProgressBarAnimation();
 
     return (
         <section id="skills">
-            <h2>{t.skills}</h2>
+            <h2>{lang.skills}</h2>
             <div>
                 {skillsData.map((skill) => (
                     <div key={skill.name} className="skill-block">

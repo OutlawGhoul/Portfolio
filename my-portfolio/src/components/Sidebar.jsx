@@ -11,7 +11,7 @@ import translations from "../i18n";
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const { language } = useAppContext();
-    const t = translations[language];
+    const lang = translations[language];
 
     const toggleSidebar = () => setIsOpen(!isOpen);
 
@@ -56,7 +56,7 @@ const Sidebar = () => {
                     <SocialLinks />
                 </div>
 
-                <SidebarNav onLinkClick={() => setIsOpen(false)} t ={t} />
+                <SidebarNav onLinkClick={() => setIsOpen(false)} t ={lang} />
             </aside>
         </>
     );

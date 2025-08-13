@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import TechIcon from "./TechIcon";
 
 const CLONES = 1;
 
@@ -251,6 +252,14 @@ export default function ProjectsCarousel({ items = [] }) {
                     </div>
                     <div className="project-meta">
                         <h3 className="project-title">{it?.title}</h3>
+
+                        {Array.isArray(it?.tech) && it.tech.length > 0 && (
+                            <div className="project-tech" aria-label="technologies used">
+                                {it.tech.map((t) => (
+                                    <TechIcon key={t} name={t} />
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </article>
                 );
@@ -276,16 +285,25 @@ export default function ProjectsCarousel({ items = [] }) {
                 }}
             >
                 <button className="lightbox-close" onClick={closeLightbox} aria-label="close">×</button>
-                <button className="lighbox-nav prev" onClick={prevLightbox} aria-label="previous Image">‹</button>
-                <figure className="lighbox-figure">
+                <button className="lightbox-nav prev" onClick={prevLightbox} aria-label="previous Image">‹</button>
+                <figure className="lightbox-figure">
                     <img
-                        className="lighbox-img"
+                        className="lightbox-img"
                         src={items[lbIndex]?.image}
                         alt={items[lbIndex]?.title || "Zoom-in Project-Image"}
                     />
-                    {items[lbIndex]?.title && <figcaption className="lighbox-caption">{items[lbIndex].title}</figcaption>}
+                    {items[lbIndex]?.title && <figcaption className="lightbox-caption">
+                        {items[lbIndex].title}
+                        {Array.isArray(items[lbIndex].tech) && items[lbIndex].tech.length > 0 && (
+                            <span className="lightbox-tech">
+                                {items[lbIndex].tech.map((t) => (
+                                    <TechIcon key={t} name={t} label={t} />
+                                ))}
+                            </span>
+                        )}
+                    </figcaption>}
                 </figure>
-                <button className="lighbox-nav next" onClick={nextLightbox} aria-label="next Image">›</button>
+                <button className="lightbox-nav next" onClick={nextLightbox} aria-label="next Image">›</button>
             </div>
         )}
       </div>

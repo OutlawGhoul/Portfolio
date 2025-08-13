@@ -17,7 +17,6 @@ const LanguageToggle = () => {
             aria-live="polite"
     >
         <span className="lang-toggle_label">{UPPER[language] || "DE"}</span>
-        <span className="lang-toggle_chevron" aria-hidden="true" />
     </button>
     );
 };

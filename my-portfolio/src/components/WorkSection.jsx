@@ -9,34 +9,38 @@ const projects = [
     title: "Pong",
     image: "Pong.png",
     repo: "https://github.com/OutlawGhoul/Pong",
+    tech: ["react", "css"],
   },
   {
     id: 1,
     title: "Tic-Tac-Toe",
     image: "Tic-Tac-Toe.png",
     repo: "https://github.com/OutlawGhoul/TicTacToe",
+    tech: ["html", "js", "css"],
   },
   {
     id: 2,
     title: "Wheater-App",
     image: "Wheater-App.png",
     repo: "https://github.com/OutlawGhoul/WeatherApp",
+    tech: ["html", "js", "css"],
   },
   {
     id: 3,
     title: "Passwordgenerator",
     image: "Passwordgenerator.png",
     repo: "https://github.com/OutlawGhoul/PasswordGenerator",
+    tech: ["html", "js", "css"],
   },
   // Coming soon
 ];
 
 export default function WorkSection() {
   const { language } = useAppContext();
-  const t = translations[language];
+  const lang = translations[language];
     return (
         <section className="work-section container" id="work">
-            <h2>{t.projectsTitle}</h2>
+            <h2>{lang.projectsTitle}</h2>
             <ProjectsCarousel items={projects} />
         </section>
     );

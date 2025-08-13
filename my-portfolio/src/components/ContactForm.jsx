@@ -4,7 +4,7 @@ import translations from "../i18n";
 
 const ContactForm = () => {
     const { language } = useAppContext();
-    const t = translations[language];
+    const lang = translations[language];
 
     const [form, setForm] = useState({ name: '', email: '', message: '' });
     const [submitted, setSubmitted] = useState(false);
@@ -23,12 +23,12 @@ const ContactForm = () => {
 
     return (
         <section id="contact">
-            <h2>{t.contact}</h2>
+            <h2>{lang.contact}</h2>
             <form onSubmit={handleSubmit}>
                 <input
                     type="text"
                     name="name"
-                    placeholder={t.name}
+                    placeholder={lang.name}
                     value={form.name}
                     onChange={handleChange}
                     required
@@ -36,20 +36,20 @@ const ContactForm = () => {
                 <input
                     type="email"
                     name="email"
-                    placeholder={t.email}
+                    placeholder={lang.email}
                     value={form.email}
                     onChange={handleChange}
                     required
                 />
                 <textarea
                     name="message"
-                    placeholder={t.message}
+                    placeholder={lang.message}
                     value={form.message}
                     onChange={handleChange}
                     required
                 />
-                <button type="submit">{t.submit}</button>
-                {submitted && <p>{t.success}</p>}
+                <button type="submit">{lang.submit}</button>
+                {submitted && <p>{lang.success}</p>}
             </form>
         </section>
     );

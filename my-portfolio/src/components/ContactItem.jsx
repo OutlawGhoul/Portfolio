@@ -13,28 +13,12 @@ const ContactItem = ({ value, icon = "" }) => {
     return (
         <div
             onClick={copyToClipboard}
-            style={{
-                cursor: "pointer",
-                fontWeight: "bold",
-                marginBottom: "0.5rem",
-                userSelect: "none",
-                position: "relative",
-            }}
+            className="contact-item"
             title="Klicken zum Kopieren"
         >
-            {icon} {value}
-            {copied && (
-                <span
-                    style={{
-                        position: "absolute",
-                        top: "-1.2rem",
-                        left: 0,
-                        fontSize: "0.75rem",
-                    }}
-                >
-                    ✅ kopiert!
-                </span>
-            )}
+            <span className="contact-icon">{icon}</span>
+            <span className="contact-text">{value}</span>
+            {copied && <span className="contact-copied">✅ kopiert!</span>}
         </div>
     );
 };

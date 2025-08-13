@@ -6,14 +6,14 @@ import profilePic from "/public/Profilbild.jpg";
 
 const Bio = () => {
     const { language } = useAppContext();
-    const t = translations[language];
+    const lang = translations[language];
 
     return (
         <section className="bio-section">
             <div className="text-block">
-                <p className="small-heading">{t.titleBio}</p>
+                <p className="small-heading">{lang.titleBio}</p>
                 <h1>Steven<br />Schwarz</h1>
-                <p>{t.bio}</p>
+                <p>{lang.bio}</p>
                 <SocialLinks />
             </div>
             <div className="image-block">
