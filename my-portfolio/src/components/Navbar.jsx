@@ -11,7 +11,7 @@ const Navbar = () => {
         en: { about: "About", skills: "Skills", contact: "Contact" }
     };
 
-    const t = labels[language];
+    const lang = labels[language];
 
     return (
         <nav className="navbar">
@@ -19,8 +19,8 @@ const Navbar = () => {
                 <a href="#about" className="logo">Steven</a>
             </div>
             <div className="nav-right">
-                <a href="#about">{t.about}</a>
-                <a href="#skills">{t.skills}</a>
+                <a href="#about">{lang.about}</a>
+                <a href="#skills">{lang.skills}</a>
                 <LanguageToggle />
                 <ThemeToggle />
             </div>

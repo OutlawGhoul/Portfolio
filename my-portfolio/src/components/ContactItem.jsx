@@ -1,7 +1,12 @@
 import React, { useState } from "react";
+import { useAppContext } from "../context/AppContext";
+import translations from "../i18n";
 
 const ContactItem = ({ value, icon = "" }) => {
     const [copied, setCopied] = useState(false);
+
+    const { language } = useAppContext();
+    const lang = translations[language];
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(value).then(() => {
@@ -14,7 +19,7 @@ const ContactItem = ({ value, icon = "" }) => {
         <div
             onClick={copyToClipboard}
             className="contact-item"
-            title="Klicken zum Kopieren"
+            title={lang.copy}
         >
             <span className="contact-icon">{icon}</span>
             <span className="contact-text">{value}</span>

@@ -7,6 +7,7 @@ const translations = {
         email: "E-Mail",
         message: "Nachricht",
         submit: "Absenden",
+        copy: "Klicken zum Kopieren",
         copied: "kopiert!",
         success: "Nachricht gesendet!",
         copyright: "Alle Rechte vorbehalten an Steven Schwarz.",
@@ -25,6 +26,9 @@ const translations = {
         today: "Heute",
         expirienceDescription: "Aufbautraining nach längerer Arbeitspause auf Grund von Vaterschaft.",
         projectsTitle: "Projekte",
+        passwordGen: "Passwortgenerator",
+        darkModeActive: "Dunkelmodus aktiviert",
+        darkModeInactive: "Dunkelmodus deaktiviert"
     },
     en: {
         about: "About me",
@@ -34,6 +38,7 @@ const translations = {
         email: "Email",
         message: "Message",
         submit: "Send",
+        copy: "Click to copy",
         copied: "copied!",
         success: "Message sent!",
         copyright: "All rights reserved to Steven Schwarz.",
@@ -51,7 +56,10 @@ const translations = {
         buildup: "development training",
         today: "today",
         expirienceDescription: "Development training after extended break due to fatherhood.",
-        projectsTitle: "Projects"
+        projectsTitle: "Projects",
+        passwordGen: "Password generator",
+        darkModeActive: "Dark mode activated",
+        darkModeInactive: "Dark mode deactivated"
     },
 };
 
