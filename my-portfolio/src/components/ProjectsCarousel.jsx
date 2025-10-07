@@ -1,311 +1,349 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import TechIcon from "./TechIcon";
+import React, {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
 
-const CLONES = 1;
+const CLONES = 2;
+const AUTOPLAY_MS = 4500;
+const DRAG_THRESHOLD = 6;
 
-export default function ProjectsCarousel({ items = [] }) {
-    const trackRef = useRef(null);
-    const [active, setActive] = useState(0);
-    const [lbOpen, setLbOpen] = useState(false);
-    const [lbIndex, setLbIndex] = useState(0);
+export default function Carousel({
+  items = [],
+  renderSlide,
+  autoPlay = true,
+  ariaLabel = "Carousel",
+}) {
+  const n = items.length;
+  const [active, setActive] = useState(0);
+  const [ready, setReady] = useState(false);
+  const wrapRef = useRef(null);
+  const trackRef = useRef(null);
+  const slideWRef = useRef(0);
 
-    // Helpers
-    const syncCardWithVar = useCallback(() => {
-        const track = trackRef.current;
-        if (!track || !track.firstElementChild) return;
-        const w = track.firstElementChild.getBoundingClientRect().width || 360;
-        track.style.setProperty("--card-w", `${w}px`);
-    }, []);
+  // Interaction
+  const hoverRef = useRef(false);
+  const focusRef = useRef(false);
+  const autoplayRef = useRef(0);
 
-    // Loop-data
-    const loopItems = (() => {
-        if (!items.length) return [];
-        const head = items.slice(0, CLONES);
-        const tail = items.slice(-CLONES);
-        return [...tail, ...items, ...head];
-    })();
-    const n = items.length;
-    const baseLoopIndex = CLONES;
+  // Drag
+  const draggingRef = useRef(false);
+  const startXRef = useRef(0);
+  const lastXRef = useRef(0);
+  const movedRef = useRef(false);
+  const animRef = useRef(0);
 
-    const getLoopChildForRealIndex = useCallback((realIndex) => {
-        const track = trackRef.current;
-        if (!track) return null;
-        const loopIndex = baseLoopIndex + realIndex;
-        return track.children[loopIndex] || null;
-    }, [baseLoopIndex]);
+  // Array + Clones
+  const loopData = useMemo(() => {
+    if (!n) return [];
+    const head = items.slice(0, CLONES);
+    const tail = items.slice(-CLONES);
+    return [...tail, ...items, ...head];
+  }, [items, n]);
 
-    const getNearestLoopIndex = useCallback((track) => {
-        if (!track) return baseLoopIndex;
-        const children = Array.from(track.children);
-        if (!children.length) return baseLoopIndex;
-        const rect = track.getBoundingClientRect();
-        const mid = rect.left + rect.width / 2;
-        let best = Infinity;
-        let nearest = baseLoopIndex;
-        for (let i = 0; i < children.length; i++) {
-            const r = children[i].getBoundingClientRect();
-            const c = r.left + r.width / 2;
-            const d = Math.abs(c - mid);
-            if (d < best) { best = d; nearest = i; }
-        }
-        return nearest;
-    }, [baseLoopIndex]);
+  const virtualToReal = useCallback(
+    (vi) => {
+      return ((vi % n) + n) % n;
+    },
+    [n]
+  );
 
-    const normalizeIfCloned = useCallback(() => {
-        const track = trackRef.current;
-        if (!track || !n) return;
-        const loopIndex = getNearestLoopIndex(track);
+  const realToVirtual = (ri) => {
+    return ri + CLONES;
+  };
 
-        if (loopIndex < baseLoopIndex) {
-            const offset = loopIndex + n;
-            track.children[offset]?.scrollIntoView({ behavior: "auto", block: "nearest", inline: "center" });
-            setActive(offset - baseLoopIndex);
-            return true;
-        }
+  const updateSlideWidth = useCallback(() => {
+    const track = trackRef.current;
+    const firstSlide = track?.querySelector(".pc-slide");
+    if (!firstSlide) return;
+    slideWRef.current =
+      firstSlide.getBoundingClientRect().width +
+      parseFloat(getComputedStyle(firstSlide).marginRight || "0");
+  }, []);
 
-        if (loopIndex >= baseLoopIndex + n) {
-            const offset = loopIndex - n;
-            track.children[offset]?.scrollIntoView({ behavior: "auto", block: "nearest", inline: "center" });
-            setActive(offset - baseLoopIndex);
-            return true;
-        }
-        return false;
-    }, [baseLoopIndex, getNearestLoopIndex, n]);
+  const jumpToVirtualIndex = useCallback((vi, smooth = true) => {
+    const track = trackRef.current;
+    if (!track) return;
+    const x = vi * slideWRef.current;
+    track.style.scrollBehavior = smooth ? "smooth" : "auto";
+    track.scrollLeft = x;
+  }, []);
 
-    const scrollToRealIndex = useCallback((realIndex, smooth = true) => {
-        const el = getLoopChildForRealIndex(Math.max(0, Math.min(realIndex, n - 1)));
-        if (el?.scrollIntoView) {
-            el.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "nearest", inline: "center" });
-        }
-    }, [getLoopChildForRealIndex, n]);
+  const getVirtualIndex = useCallback(() => {
+    const track = trackRef.current;
+    if (!track || !slideWRef.current) return realToVirtual(active);
+    const vi = Math.round(track.scrollLeft / slideWRef.current);
+    return vi;
+  }, [active]);
 
-    const updateActive = useCallback(() => {
-        const track = trackRef.current;
-        if (!track || !n) return;
-        if (normalizeIfCloned()) return;
+  const normalizeIfCloned = useCallback(() => {
+    const track = trackRef.current;
+    if (!track || !n) return;
+    const vi = getVirtualIndex();
 
-        const loopIndex = getNearestLoopIndex(track);
-        const realIndex = loopIndex - baseLoopIndex;
-        setActive(Math.max(0, Math.min(realIndex, n - 1)));
-    }, [baseLoopIndex, getNearestLoopIndex, normalizeIfCloned, n]);
+    if (vi < CLONES) {
+      const target = vi + n;
+      track.style.scrollBehavior = "auto";
+      track.scrollLeft = target * slideWRef.current;
+    }
+  }, [getVirtualIndex, n]);
 
-    useEffect(() => {
-        const track = trackRef.current;
-        if (!track ||!n) return;
+  const updateActiveFromScroll = useCallback(() => {
+    const vi = getVirtualIndex();
+    const real = virtualToReal(vi - CLONES);
+    setActive(real);
+  }, [getVirtualIndex, virtualToReal]);
 
-        const updateAll = () => { syncCardWithVar(); updateActive(); };
+  const next = useCallback(() => {
+    if (!n) return;
+    const vi = getVirtualIndex();
+    jumpToVirtualIndex(vi + 1, true);
+  }, [getVirtualIndex, jumpToVirtualIndex, n]);
 
-        const t = setTimeout(() => {
-            syncCardWithVar();
-            track.children[baseLoopIndex]?.scrollIntoView({ behavior: "auto", block: "nearest", inline: "center" });
-            setActive(0);
-            updateActive();
-        }, 0);
+  const prev = useCallback(() => {
+    if (!n) return;
+    const vi = getVirtualIndex();
+    jumpToVirtualIndex(vi - 1, true);
+  }, [getVirtualIndex, jumpToVirtualIndex, n]);
 
-        const onScroll = () => updateActive();
-        track.addEventListener("scroll", onScroll, { passive: true });
-        window.addEventListener("resize", updateAll);
+  const goToReal = useCallback(
+    (ri) => {
+      if (!n) return;
+      jumpToVirtualIndex(realToVirtual(ri), true);
+    },
+    [jumpToVirtualIndex, n]
+  );
 
-        const imgs = track.querySelectorAll("img");
-        const onImg = () => updateAll();
-        imgs.forEach(img => { if (!img.complete) img.addEventListener("load", onImg); });
+  // Mount / Resize
+  useEffect(() => {
+    const onResize = () => {
+      const currentReal = active;
+      updateSlideWidth();
+      requestAnimationFrame(() => {
+        jumpToVirtualIndex(realToVirtual(currentReal), false);
+      });
+    };
+    onResize();
+    setReady(true);
+    const ro = new ResizeObserver(onResize);
+    if (wrapRef.current) ro.observe(wrapRef.current);
+    window.addEventListener("orientationchange", onResize);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("orientationchange", onResize);
+    };
+  }, [active, jumpToVirtualIndex, updateSlideWidth]);
 
-        const ro = new ResizeObserver(updateAll);
-        ro.observe(track);
+  // Scroll Listener
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
 
-        return () => {
-            clearTimeout(t);
-            track.removeEventListener("scroll", onScroll);
-            window.removeEventListener("resize", updateAll);
-            imgs.forEach(img => img.removeEventListener("load", onImg));
-            ro.disconnect();
-        };
-    }, [baseLoopIndex, syncCardWithVar, updateActive, n]);
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      animRef.current = requestAnimationFrame(() => {
+        normalizeIfCloned();
+        updateActiveFromScroll();
+        ticking = false;
+      });
+    };
+    track.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      track.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(animRef.current);
+    };
+  }, [normalizeIfCloned, updateActiveFromScroll]);
 
-    useEffect(() => {
-        const track = trackRef.current;
-        if (!track) return;
-        let startX = 0;
-        let scrollStart = 0;
-        let dragging = false;
+  // Autoplay
+  useEffect(() => {
+    if (!autoPlay || !n) return;
+    const tick = () => {
+      if (hoverRef.current || focusRef.current || document.hidden) return;
+      next();
+    };
+    autoplayRef.current = window.setInterval(tick, AUTOPLAY_MS);
+    return () => window.clearInterval(autoplayRef.current);
+  }, [autoPlay, n, next]);
 
-        const down = (e) => {
-            dragging = true;
-            track.classList.add("is-dragging");
-            startX = (e.touches ? e.touches[0].pageX : e.pageX);
-            scrollStart = track.scrollLeft;
-        };
-        const move = (e) => {
-            if (!dragging) return;
-            const x = (e.touches ? e.touches[0].pageX : e.pageX);
-            track.scrollLeft = scrollStart - (x - startX);
-        };
-        const up = () => {
-            if (!dragging) return;
-            dragging = false;
-            track.classList.remove("is-dragging");
-            if (!normalizeIfCloned()) {
-                const trackEl = trackRef.current;
-                const loopIndex = getNearestLoopIndex(trackEl);
-                trackEl.children[loopIndex]?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-            }
-            updateActive();
-        };
+  // Hover / Focus
+  const onEnter = () => (hoverRef.current = true);
+  const onLeave = () => (hoverRef.current = false);
+  const onFocus = () => (focusRef.current = true);
+  const onBlur = () => (focusRef.current = false);
 
-        track.addEventListener("mousedown", down);
-        track.addEventListener("mousemove", move);
-        window.addEventListener("mouseup", up);
-        track.addEventListener("touchstart", down, { passive: true });
-        track.addEventListener("touchmove", move, { passive: true });
-        window.addEventListener("touchend", up);
+  // Pointer Drag
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
 
-        return () => {
-            track.removeEventListener("mousedown", down);
-            track.removeEventListener("mousemove", move);
-            window.removeEventListener("mouseup", up);
-            track.removeEventListener("touchstart", down);
-            track.removeEventListener("touchmove", move);
-            window.removeEventListener("touchend", up);
-        };
-    }, [getNearestLoopIndex, normalizeIfCloned, updateActive]);
+    const down = (e) => {
+      if (e.button !== undefined && e.button !== 0) return;
+      draggingRef.current = true;
+      movedRef.current = false;
+      startXRef.current = lastXRef.current =
+        e.clientX ?? e.touches?.[0]?.clientX ?? 0;
+      track.classList.add("pc-dragging");
+    };
+    const move = (e) => {
+      if (!draggingRef.current) return;
+      const x = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
+      const dx = x - lastXRef.current;
+      if (Math.abs(x - startXRef.current) > DRAG_THRESHOLD)
+        movedRef.current = true;
+      track.scrollLeft -= dx;
+      lastXRef.current = x;
+    };
+    const up = () => {
+      if (!draggingRef.current) return;
+      draggingRef.current = false;
+      track.classList.remove("pc-dragging");
+      if (movedRef.current) {
+        normalizeIfCloned();
+        updateActiveFromScroll();
+      }
+    };
 
-    const prev = useCallback(() => {
-        if (lbOpen) {
-            setLbIndex(i => {
-                const ni = (i - 1 + n) % n;
-                scrollToRealIndex(i);
-                return ni;
-            });
-        } else {
-            const ni = (active - 1 + n) % n;
-            scrollToRealIndex(ni);
-        }
-    }, [lbOpen, active, scrollToRealIndex, n]);
+    track.addEventListener("pointerdown", down);
+    window.addEventListener("pointermove", move, { passive: true });
+    window.addEventListener("pointerup", up);
+    track.addEventListener("touchstart", down, { passive: true });
+    window.addEventListener("touchmove", move, { passive: true });
+    window.addEventListener("touchend", up);
 
-    const next = useCallback(() => {
-        if (lbOpen) {
-          setLbIndex((i) => {
-            const ni = (i + 1) % n;
-            scrollToRealIndex(ni, false);
-            return ni;
-          });
-        } else {
-          const ni = (active + 1) % n;
-          scrollToRealIndex(ni);
-        }
-            }, [lbOpen, active, scrollToRealIndex, n]);
+    return () => {
+      track.removeEventListener("pointerdown", down);
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      track.removeEventListener("touchstart", down);
+      window.removeEventListener("touchemove", move);
+      window.removeEventListener("touchend", up);
+    };
+  }, [normalizeIfCloned, updateActiveFromScroll]);
 
-    const openLightbox = useCallback((realIndex) => {
-        setLbIndex(realIndex);
-        setLbOpen(true);
-        document.documentElement.style.overflowX = "hidden";
-    }, []);
-    const closeLightbox = useCallback(() => {
-        setLbOpen(false);
-        document.documentElement.style.overflow = "";
-    }, []);
-    const nextLightbox = useCallback(() => {
-        setLbIndex((i) => (i + 1) % n);
-    }, [n]);
-    const prevLightbox = useCallback(() => {
-        setLbIndex((i) => (i - 1 + n) % n);
-    }, [n]);
+  // Keyboard
+  const onKeyDown = (e) => {
+    if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      prev();
+    } else if (e.key === "ArrowRight") {
+      e.preventDefault();
+      next();
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      goToReal(0);
+    } else if (e.key === "End") {
+      e.preventDefault();
+      goToReal(n - 1);
+    }
+  };
 
-    useEffect(() => {
-      const onKey = (e) => {
-        if (lbOpen) {
-          if (e.key === "Escape") closeLightbox();
-          if (e.key === "ArrowRight") nextLightbox();
-          if (e.key === "ArrowLeft") prevLightbox();
-          return;
-        }
-        if (e.key === "ArrowRight") next();
-        if (e.key === "ArrowLeft") prev();
-      };
-      window.addEventListener("keydown", onKey);
-      return () => window.removeEventListener("keydown", onKey);
-    }, [lbOpen, next, prev, closeLightbox, nextLightbox, prevLightbox]);
+  // Initial Position
+  useEffect(() => {
+    if (!n) return;
+    updateSlideWidth();
+    jumpToVirtualIndex(realToVirtual(active), false);
+  }, [active, jumpToVirtualIndex, updateSlideWidth, n]);
 
-    return (
-      <div className="carousel" aria-roledescription="carousel">
-        <button
-          className="carousel-arrow left"
-          onClick={prev}
-          aria-label="previous project"
-        >
-          ‹
-        </button>
+  if (!n) return null;
 
-        <div className="carousel-track" ref={trackRef}>
-          {loopItems.map((it, i) => {
-            const realIndex = (i - baseLoopIndex + n) % n;
-            return (
-                <article
-                    key={`loop-${i}-${it?.id ?? "x"}`}
-                    data-id={it?.id ?? realIndex}
-                    className={`project-card ${active === realIndex ? "is-active" : ""}`}
-                    aria-label={`${it.title || "Project"} ${realIndex + 1} of ${n}`}
-                >
-                    <div className="project-thumb" onClick={() => openLightbox(realIndex)} style={{ cursor: "zoom-in" }}>
-                        <img src={it?.image} alt={it?.title || "Project-image"} />
-                        {it?.tag && <span className="project-tag">{it?.tag}</span>}
-                    </div>
-                    <div className="project-meta">
-                        <h3 className="project-title">{it?.title}</h3>
+  return (
+    <section
+      ref={wrapRef}
+      className="pc-wrap"
+      role="region"
+      aria-roledescription="carousel"
+      aria-label={ariaLabel}
+      onMouseEnter={onEnter}
+      onMouseLeave={onLeave}
+      onFocusCapture={onFocus}
+      onBlurCapture={onBlur}
+    >
+      {/* Arrows */}
+      <button
+        className="pc-arrow pc-left"
+        onClick={prev}
+        aria-label="previous element"
+      >
+        ‹
+      </button>
 
-                        {Array.isArray(it?.tech) && it.tech.length > 0 && (
-                            <div className="project-tech" aria-label="technologies used">
-                                {it.tech.map((t) => (
-                                    <TechIcon key={t} name={t} />
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                </article>
-                );
-            })}
-        </div>
-
-        <button
-          className="carousel-arrow right"
-          onClick={next}
-          aria-label="next project"
-        >
-          ›
-        </button>
-
-        {/* Lightbox */}
-        {lbOpen && n > 0 && (
-            <div 
-                className="lightbox"
-                role="dialog"
-                aria-modal="true"
-                onClick={(e) => {
-                    if (e.target === e.currentTarget) closeLightbox();
-                }}
+      {/* Track */}
+      <div
+        ref={trackRef}
+        className="pc-track"
+        tabIndex={0}
+        aria-live="polite"
+        onKeyDown={onKeyDown}
+      >
+        {loopData.map((it, i) => {
+          const real = virtualToReal(i - CLONES);
+          const isActive = active === real;
+          return (
+            <article
+              key={`${it?.id ?? real}-${i}`}
+              className={`pc-slide ${isActive ? "is-active" : ""}`}
+              aria-label={`${it?.title ?? "Slide"} ${real + 1} of ${n}`}
+              aria-current={isActive ? "true" : undefined}
             >
-                <button className="lightbox-close" onClick={closeLightbox} aria-label="close">×</button>
-                <button className="lightbox-nav prev" onClick={prevLightbox} aria-label="previous Image">‹</button>
-                <figure className="lightbox-figure">
-                    <img
-                        className="lightbox-img"
-                        src={items[lbIndex]?.image}
-                        alt={items[lbIndex]?.title || "Zoom-in Project-Image"}
-                    />
-                    {items[lbIndex]?.title && <figcaption className="lightbox-caption">
-                        {items[lbIndex].title}
-                        {Array.isArray(items[lbIndex].tech) && items[lbIndex].tech.length > 0 && (
-                            <span className="lightbox-tech">
-                                {items[lbIndex].tech.map((t) => (
-                                    <TechIcon key={t} name={t} label={t} />
-                                ))}
-                            </span>
-                        )}
-                    </figcaption>}
-                </figure>
-                <button className="lightbox-nav next" onClick={nextLightbox} aria-label="next Image">›</button>
-            </div>
-        )}
+              {renderSlide ? renderSlide(it, real) : <DefaultSlide item={it} />}
+            </article>
+          );
+        })}
       </div>
-    );
+
+      <button
+        className="pc-arrow pc-right"
+        onClick={next}
+        aria-label="next element"
+      >
+        ›
+      </button>
+
+      {/* Dots */}
+      <ul className="pc-dots" role="tablist" aria-label="Carousel Pagination">
+        {items.map((_, i) => (
+          <li key={i} role="presentation">
+            <button
+              role="tab"
+              aria-selected={active === i}
+              aria-label={`Move to ${i + 1}'th Slide`}
+              className={`pc-dot ${active === i ? "is-active" : ""}`}
+              onClick={() => goToReal(i)}
+            />
+          </li>
+        ))}
+      </ul>
+
+      {/* Invisible Helper for Screen Reader */}
+      <span className="sr-only" aria-live="polite">
+        {ready ? `current element: ${active + 1} / ${n}` : ""}
+      </span>
+    </section>
+  );
+}
+
+function DefaultSlide({ item }) {
+  return (
+    <div className="pc-card">
+      <div className="pc-thumb">
+        <img
+          src={item?.image}
+          alt={item?.title || "Image"}
+          loading="lazy"
+          decoding="async"
+          sizes="(max-width: 786px) 80vw, 420px"
+        />
+        {item?.tag && <span className="pc-tag">{item.tag}</span>}
+      </div>
+      {(item?.title || item?.subtitle) && (
+        <div className="pc-meta">
+          {item?.title && <h3 className="pc-title">{item.title}</h3>}
+          {item?.subtitle && <p className="pc-sub">{item.subtitle}</p>}
+        </div>
+      )}
+    </div>
+  );
 }

@@ -1,8 +1,7 @@
 import React from "react";
-import ProjectsCarousel from "./ProjectsCarousel";
+import Carousel from "./ProjectsCarousel";
 import { useAppContext } from "../context/AppContext";
 import translations from "../i18n";
-
 
 export default function WorkSection() {
   const { language } = useAppContext();
@@ -39,11 +38,11 @@ export default function WorkSection() {
     },
     // Coming soon
   ];
-  
-    return (
-        <section className="work-section container" id="work">
-            <h2>{lang.projectsTitle}</h2>
-            <ProjectsCarousel items={projects} />
-        </section>
-    );
+
+  return (
+    <section className="work-section container" id="work">
+      <h2>{lang.projectsTitle}</h2>
+      <Carousel items={projects} />
+    </section>
+  );
 }

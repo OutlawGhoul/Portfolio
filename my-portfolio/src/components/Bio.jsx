@@ -2,7 +2,7 @@ import React from "react";
 import { useAppContext } from "../context/AppContext";
 import translations from "../i18n";
 import SocialLinks from "./SocialLinks";
-import profilePic from "/public/Profilbild.jpg";
+import profilePic from "/src/assets/images/Profilbild.jpg";
 
 const Bio = () => {
     const { language } = useAppContext();
