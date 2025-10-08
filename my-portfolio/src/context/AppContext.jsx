@@ -1,24 +1,49 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+  useMemo,
+} from "react";
 
-const AppContext = createContext();
+const AppContext = createContext(null);
 
 export const AppProvider = ({ children }) => {
-    const [darkMode, setDarkMode] = useState(false);
-    const [language, setLanguage] = useState('de');
+  const [darkMode, setDarkMode] = useState(false);
+  const [language, setLanguage] = useState("de");
 
-    useEffect(() => {
-        if (darkMode) {
-            document.body.classList.add("dark");
-        } else {
-            document.body.classList.remove("dark");
-        }
-    }, [darkMode]);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const saved = localStorage.getItem("theme");
+    if (saved === "dark" || saved === "light") {
+      setDarkMode(saved === "dark");
+    } else {
+      const prefersDark = window.matchMedia?.(
+        "(prefers-color-scheme: dark)"
+      )?.matches;
+      setDarkMode(!!prefersDark);
+    }
+  }, []);
 
-    return (
-        <AppContext.Provider value={{ darkMode, setDarkMode, language, setLanguage }}>
-            {children}
-        </AppContext.Provider>
-    );
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    document.body.classList.toggle("dark", darkMode);
+    try {
+      localStorage.setItem("theme", darkMode ? "dark" : "light");
+    } catch {
+      // ignore
+    }
+    const meta = document.querySelector('meta[name="color-scheme"]');
+    if (meta)
+      meta.setAttribute("content", darkMode ? "dark light" : "light dark");
+  }, [darkMode]);
+
+  const value = useMemo(
+    () => ({ darkMode, setDarkMode, language, setLanguage }),
+    [darkMode, language]
+  );
+
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
 
 // eslint-disable-next-line react-refresh/only-export-components

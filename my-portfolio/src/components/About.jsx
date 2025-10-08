@@ -13,7 +13,7 @@ const About = () => {
             <div className="about-cards">
                 <p><strong>{lang.age}:</strong> 23 {lang.yearsOld}</p>
                 <p><strong>{lang.location}:</strong> Zürich, Schweiz</p>
-                <p><strong>{lang.expirience}:</strong> 8 {lang.months}</p>
+                <p><strong>{lang.experience}:</strong> 8 {lang.months}</p>
                 <p><strong>{lang.profile}:</strong> {lang.webdev}</p>
             </div>
         </section>

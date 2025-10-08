@@ -4,9 +4,7 @@ import translations from "../i18n";
 
 
 const ThemeToggle = () => {
-    const { darkMode, setDarkMode } = useAppContext();
-
-    const { language } = useAppContext();
+    const { darkMode, setDarkMode, language } = useAppContext();
     const lang = translations[language];
 
     return (

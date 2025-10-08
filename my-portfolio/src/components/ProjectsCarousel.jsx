@@ -5,6 +5,8 @@ import React, {
   useState,
   useCallback,
 } from "react";
+import { createPortal } from "react-dom";
+import TechIcon from "./TechIcon";
 
 const CLONES = 2;
 const AUTOPLAY_MS = 4500;
@@ -34,6 +36,14 @@ export default function Carousel({
   const lastXRef = useRef(0);
   const movedRef = useRef(false);
   const animRef = useRef(0);
+  const avoidClickRef = useRef(false);
+
+  // Lightbox
+  const [lbOpen, setLbOpen] = useState(false);
+  const [lbIndex, setLbIndex] = useState(0);
+  const lightboxRef = useRef(null);
+  const closeBtnRef = useRef(null);
+  const lastFocusedRef = useRef(null);
 
   // Array + Clones
   const loopData = useMemo(() => {
@@ -56,11 +66,11 @@ export default function Carousel({
 
   const updateSlideWidth = useCallback(() => {
     const track = trackRef.current;
-    const firstSlide = track?.querySelector(".pc-slide");
-    if (!firstSlide) return;
-    slideWRef.current =
-      firstSlide.getBoundingClientRect().width +
-      parseFloat(getComputedStyle(firstSlide).marginRight || "0");
+    const firstSlide = track?.querySelector(".carousel-slide");
+    if (!firstSlide || !track) return;
+    const style = getComputedStyle(track);
+    const gap = parseFloat(style.columnGap || style.gap || "0") || 0;
+    slideWRef.current = firstSlide.getBoundingClientRect().width + gap;
   }, []);
 
   const jumpToVirtualIndex = useCallback((vi, smooth = true) => {
@@ -85,6 +95,10 @@ export default function Carousel({
 
     if (vi < CLONES) {
       const target = vi + n;
+      track.style.scrollBehavior = "auto";
+      track.scrollLeft = target * slideWRef.current;
+    } else if (vi >= CLONES + n) {
+      const target = vi - n;
       track.style.scrollBehavior = "auto";
       track.scrollLeft = target * slideWRef.current;
     }
@@ -116,6 +130,75 @@ export default function Carousel({
     [jumpToVirtualIndex, n]
   );
 
+  // Lightbox
+  const openLightbox = useCallback((ri) => {
+    lastFocusedRef.current = document.activeElement;
+    setLbIndex(ri);
+    setLbOpen(true);
+  }, []);
+
+  const closeLightbox = useCallback(() => {
+    setLbOpen(false);
+  }, []);
+
+  const lbNext = useCallback(() => {
+    setLbIndex((i) => (i + 1) % n);
+  }, [n]);
+
+  const lbPrev = useCallback(() => {
+    setLbIndex((i) => (i - 1 + n) % n);
+  }, [n]);
+
+  const handleOpen = useCallback(
+    (ri) => {
+      if (avoidClickRef.current) return;
+      openLightbox(ri);
+    },
+    [openLightbox]
+  );
+
+  useEffect(() => {
+    const rootSection = wrapRef.current;
+    if (lbOpen) {
+      const prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      if (rootSection) {
+        rootSection.setAttribute("aria-hidden", "true");
+        rootSection.setAttribute("inert", "");
+      }
+      setTimeout(() => closeBtnRef.current?.focus(), 0);
+
+      return () => {
+        document.body.style.overflow = prevOverflow;
+        if (rootSection) {
+          rootSection.removeAttribute("aria-hidden");
+          rootSection.removeAttribute("inert");
+        }
+        lastFocusedRef.current?.focus?.();
+      };
+    }
+  }, [lbOpen]);
+
+  const trapFocus = useCallback((e) => {
+    if (e.key !== "Tab" || !lightboxRef.current) return;
+    const focusables = lightboxRef.current.querySelectorAll(
+      'a, button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const list = Array.from(focusables).filter(
+      (el) => !el.hasAttribute("disabled")
+    );
+    if (!list.length) return;
+    const first = list[0];
+    const last = list[list.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }, []);
+
   // Mount / Resize
   useEffect(() => {
     const onResize = () => {
@@ -144,6 +227,7 @@ export default function Carousel({
     let ticking = false;
     const onScroll = () => {
       if (ticking) return;
+      ticking = true;
       animRef.current = requestAnimationFrame(() => {
         normalizeIfCloned();
         updateActiveFromScroll();
@@ -179,47 +263,52 @@ export default function Carousel({
     const track = trackRef.current;
     if (!track) return;
 
-    const down = (e) => {
+    const onPointerDown = (e) => {
       if (e.button !== undefined && e.button !== 0) return;
       draggingRef.current = true;
       movedRef.current = false;
-      startXRef.current = lastXRef.current =
-        e.clientX ?? e.touches?.[0]?.clientX ?? 0;
-      track.classList.add("pc-dragging");
+      const x = e.clientX ?? 0;
+      startXRef.current = x;
+      lastXRef.current = x;
+      track.setPointerCapture?.(e.pointerId);
+      track.classList.add("carousel-dragging");
     };
-    const move = (e) => {
+    const onPointerMove = (e) => {
       if (!draggingRef.current) return;
-      const x = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
+      const x = e.clientX ?? 0;
       const dx = x - lastXRef.current;
       if (Math.abs(x - startXRef.current) > DRAG_THRESHOLD)
         movedRef.current = true;
       track.scrollLeft -= dx;
       lastXRef.current = x;
     };
-    const up = () => {
+    const onPointerUpOrCancel = (e) => {
       if (!draggingRef.current) return;
       draggingRef.current = false;
-      track.classList.remove("pc-dragging");
+      track.releasePointerCapture?.(e.pointerId);
+      track.classList.remove("carousel-dragging");
       if (movedRef.current) {
+        avoidClickRef.current = true;
+        setTimeout(() => (avoidClickRef.current = false), 0);
         normalizeIfCloned();
         updateActiveFromScroll();
       }
     };
 
-    track.addEventListener("pointerdown", down);
-    window.addEventListener("pointermove", move, { passive: true });
-    window.addEventListener("pointerup", up);
-    track.addEventListener("touchstart", down, { passive: true });
-    window.addEventListener("touchmove", move, { passive: true });
-    window.addEventListener("touchend", up);
+    track.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
+    window.addEventListener("pointerup", onPointerUpOrCancel);
+    track.addEventListener("touchstart", onPointerDown, { passive: true });
+    window.addEventListener("touchmove", onPointerMove, { passive: true });
+    window.addEventListener("touchend", onPointerUpOrCancel);
 
     return () => {
-      track.removeEventListener("pointerdown", down);
-      window.removeEventListener("pointermove", move);
-      window.removeEventListener("pointerup", up);
-      track.removeEventListener("touchstart", down);
-      window.removeEventListener("touchemove", move);
-      window.removeEventListener("touchend", up);
+      track.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", onPointerUpOrCancel);
+      track.removeEventListener("touchstart", onPointerDown);
+      window.removeEventListener("touchmove", onPointerMove);
+      window.removeEventListener("touchend", onPointerUpOrCancel);
     };
   }, [normalizeIfCloned, updateActiveFromScroll]);
 
@@ -227,16 +316,21 @@ export default function Carousel({
   const onKeyDown = (e) => {
     if (e.key === "ArrowLeft") {
       e.preventDefault();
-      prev();
+      if (lbOpen) lbPrev();
+      else prev();
     } else if (e.key === "ArrowRight") {
       e.preventDefault();
-      next();
+      if (lbOpen) lbNext();
+      else next();
     } else if (e.key === "Home") {
       e.preventDefault();
       goToReal(0);
     } else if (e.key === "End") {
       e.preventDefault();
       goToReal(n - 1);
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      closeLightbox();
     }
   };
 
@@ -250,100 +344,272 @@ export default function Carousel({
   if (!n) return null;
 
   return (
-    <section
-      ref={wrapRef}
-      className="pc-wrap"
-      role="region"
-      aria-roledescription="carousel"
-      aria-label={ariaLabel}
-      onMouseEnter={onEnter}
-      onMouseLeave={onLeave}
-      onFocusCapture={onFocus}
-      onBlurCapture={onBlur}
-    >
-      {/* Arrows */}
-      <button
-        className="pc-arrow pc-left"
-        onClick={prev}
-        aria-label="previous element"
+    <>
+      <section
+        ref={wrapRef}
+        className="carousel-wrap"
+        role="region"
+        aria-roledescription="carousel"
+        aria-label={ariaLabel}
+        onMouseEnter={onEnter}
+        onMouseLeave={onLeave}
+        onFocusCapture={onFocus}
+        onBlurCapture={onBlur}
       >
-        ‹
-      </button>
-
-      {/* Track */}
-      <div
-        ref={trackRef}
-        className="pc-track"
-        tabIndex={0}
-        aria-live="polite"
-        onKeyDown={onKeyDown}
-      >
-        {loopData.map((it, i) => {
-          const real = virtualToReal(i - CLONES);
-          const isActive = active === real;
-          return (
-            <article
-              key={`${it?.id ?? real}-${i}`}
-              className={`pc-slide ${isActive ? "is-active" : ""}`}
-              aria-label={`${it?.title ?? "Slide"} ${real + 1} of ${n}`}
-              aria-current={isActive ? "true" : undefined}
-            >
-              {renderSlide ? renderSlide(it, real) : <DefaultSlide item={it} />}
-            </article>
-          );
-        })}
-      </div>
-
-      <button
-        className="pc-arrow pc-right"
-        onClick={next}
-        aria-label="next element"
-      >
-        ›
-      </button>
-
-      {/* Dots */}
-      <ul className="pc-dots" role="tablist" aria-label="Carousel Pagination">
-        {items.map((_, i) => (
-          <li key={i} role="presentation">
-            <button
-              role="tab"
-              aria-selected={active === i}
-              aria-label={`Move to ${i + 1}'th Slide`}
-              className={`pc-dot ${active === i ? "is-active" : ""}`}
-              onClick={() => goToReal(i)}
+        {/* Arrows */}
+        <button
+          className="carousel-arrow left"
+          aria-label="previous element"
+          onClick={prev}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M15.5 19l-7-7 7-7"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
-          </li>
-        ))}
-      </ul>
+          </svg>
+        </button>
 
-      {/* Invisible Helper for Screen Reader */}
-      <span className="sr-only" aria-live="polite">
-        {ready ? `current element: ${active + 1} / ${n}` : ""}
-      </span>
-    </section>
+        {/* Track */}
+        <div
+          ref={trackRef}
+          className="carousel-track"
+          tabIndex={0}
+          aria-live="polite"
+          onKeyDown={onKeyDown}
+        >
+          {loopData.map((it, i) => {
+            const real = virtualToReal(i - CLONES);
+            const isActive = active === real;
+            return (
+              <article
+                key={`${it?.id ?? real}-${i}`}
+                className={`carousel-slide ${isActive ? "is-active" : ""}`}
+                aria-label={`${it?.title ?? "Slide"} ${real + 1} of ${n}`}
+                aria-current={isActive ? "true" : undefined}
+              >
+                {renderSlide ? (
+                  renderSlide(it, real, () => handleOpen(real))
+                ) : (
+                  <DefaultSlide item={it} onOpen={() => handleOpen(real)} />
+                )}
+              </article>
+            );
+          })}
+        </div>
+
+        <button
+          className="carousel-arrow right"
+          aria-label="next element"
+          onClick={next}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M8.5 5l7 7-7 7"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+
+        {/* Dots */}
+        <ul
+          className="carousel-dots"
+          role="tablist"
+          aria-label="Carousel Pagination"
+        >
+          {items.map((_, i) => (
+            <li key={i} role="presentation">
+              <button
+                role="tab"
+                aria-selected={active === i}
+                aria-label={`Move to ${i + 1}'th Slide`}
+                className={`carousel-dot ${active === i ? "is-active" : ""}`}
+                onClick={() => goToReal(i)}
+              />
+            </li>
+          ))}
+        </ul>
+
+        {/* Invisible Helper for Screen Reader */}
+        <span className="sr-only" aria-live="polite">
+          {ready ? `current element: ${active + 1} / ${n}` : ""}
+        </span>
+      </section>
+
+      {lbOpen &&
+        createPortal(
+          <div
+            ref={lightboxRef}
+            className="lightbox"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Image view"
+            onClick={closeLightbox}
+            onKeyDown={trapFocus}
+          >
+            <button
+              ref={closeBtnRef}
+              className="lightbox-close"
+              aria-label="close"
+              onClick={closeLightbox}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M6 6L18 18M6 18L18 6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </button>
+            <button
+              className="lightbox-nav prev"
+              aria-label="previous"
+              onClick={(e) => {
+                e.stopPropagation();
+                lbPrev();
+              }}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M15.5 19l-7-7 7-7"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+            <div
+              className="lightbox-inner"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={items[lbIndex].image}
+                alt={items[lbIndex].title || "Image"}
+              />
+              {items[lbIndex].title && (
+                <div className="lightbox-caption">{items[lbIndex].title}</div>
+              )}
+            </div>
+            <button
+              className="lightbox-nav next"
+              aria-label="next"
+              onClick={(e) => {
+                e.stopPropagation();
+                lbNext();
+              }}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M8.5 5l7 7-7 7"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>{" "}
+          </div>,
+          document.body
+        )}
+    </>
   );
 }
 
-function DefaultSlide({ item }) {
+function DefaultSlide({ item, onOpen }) {
   return (
-    <div className="pc-card">
-      <div className="pc-thumb">
+    <div className="carousel-card">
+      <div
+        className="carousel-thumb"
+        onClick={onOpen}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onOpen?.();
+          }
+        }}
+      >
         <img
           src={item?.image}
-          alt={item?.title || "Image"}
+          alt={item?.title || "image"}
           loading="lazy"
           decoding="async"
-          sizes="(max-width: 786px) 80vw, 420px"
+          sizes="(max-width: 768px) 80vw, 420px"
+          draggable={false}
         />
-        {item?.tag && <span className="pc-tag">{item.tag}</span>}
+        {item?.tag && <span className="carousel-tag">{item.tag}</span>}
       </div>
-      {(item?.title || item?.subtitle) && (
-        <div className="pc-meta">
-          {item?.title && <h3 className="pc-title">{item.title}</h3>}
-          {item?.subtitle && <p className="pc-sub">{item.subtitle}</p>}
+
+      <div className="carousel-meta">
+        <div className="carousel-row">
+          <h3 className="carousel-title">{item?.title}</h3>
+
+          {item?.repo && (
+            <a
+              className="repo-link"
+              href={item.repo}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={`${item.title} Repository öffnen`}
+              title="Repository"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                {/* Left */}
+                <path
+                  d="M10 3H3v7M3 14v7h7"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                {/* Right */}
+                <path
+                  d="M14 3h7v7M21 14v7h-7"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                {/* Arrow */}
+                <path
+                  d="M10 14L21 3"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </a>
+          )}
         </div>
-      )}
+
+        {Array.isArray(item?.tech) && item.tech.length > 0 && (
+          <ul className="tech-icons">
+            {item.tech.map((t) => (
+              <li key={t} className="tech-item">
+                <TechIcon name={t} size={22} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }
