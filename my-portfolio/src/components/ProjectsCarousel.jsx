@@ -29,6 +29,7 @@ export default function Carousel({
   const hoverRef = useRef(false);
   const focusRef = useRef(false);
   const autoplayRef = useRef(0);
+  const activeCardRef = useRef(null);
 
   // Drag
   const draggingRef = useRef(false);
@@ -130,6 +131,12 @@ export default function Carousel({
     [jumpToVirtualIndex, n]
   );
 
+  const canStartDrag = (target) => {
+    const card = target.closest?.(".carousel-card");
+    const onImage = target.closest?.("carousel-thumb");
+    return !!card && !onImage;
+  };
+
   // Lightbox
   const openLightbox = useCallback((ri) => {
     lastFocusedRef.current = document.activeElement;
@@ -162,18 +169,17 @@ export default function Carousel({
     if (lbOpen) {
       const prevOverflow = document.body.style.overflow;
       document.body.style.overflow = "hidden";
-      if (rootSection) {
-        rootSection.setAttribute("aria-hidden", "true");
-        rootSection.setAttribute("inert", "");
-      }
-      setTimeout(() => closeBtnRef.current?.focus(), 0);
+      rootSection.setAttribute("aria-hidden", "true");
+      rootSection.setAttribute("inert", "");
+      setTimeout(() => {
+        lightboxRef.current?.focus();
+        closeBtnRef.current?.focus();
+      }, 0);
 
       return () => {
         document.body.style.overflow = prevOverflow;
-        if (rootSection) {
-          rootSection.removeAttribute("aria-hidden");
-          rootSection.removeAttribute("inert");
-        }
+        rootSection.removeAttribute("aria-hidden");
+        rootSection.removeAttribute("inert");
         lastFocusedRef.current?.focus?.();
       };
     }
@@ -264,13 +270,17 @@ export default function Carousel({
     if (!track) return;
 
     const onPointerDown = (e) => {
-      if (e.button !== undefined && e.button !== 0) return;
+      if ((e.button ?? 0) !== 0) return;
+      if (!canStartDrag(e.target)) return;
+      const card = e.target.closest(".carousel-card");
+      activeCardRef.current = card;
+      card?.classList.add("is-dragging");
       draggingRef.current = true;
       movedRef.current = false;
       const x = e.clientX ?? 0;
       startXRef.current = x;
       lastXRef.current = x;
-      track.setPointerCapture?.(e.pointerId);
+      track.setPointCapture?.(e.pointerId);
       track.classList.add("carousel-dragging");
     };
     const onPointerMove = (e) => {
@@ -289,7 +299,7 @@ export default function Carousel({
       track.classList.remove("carousel-dragging");
       if (movedRef.current) {
         avoidClickRef.current = true;
-        setTimeout(() => (avoidClickRef.current = false), 0);
+        setTimeout(() => (avoidClickRef.current = false), 160);
         normalizeIfCloned();
         updateActiveFromScroll();
       }
@@ -452,7 +462,10 @@ export default function Carousel({
             role="dialog"
             aria-modal="true"
             aria-label="Image view"
-            onClick={closeLightbox}
+            tabIndex={-1}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) closeLightbox();
+            }}
             onKeyDown={trapFocus}
           >
             <button
@@ -498,8 +511,60 @@ export default function Carousel({
                 src={items[lbIndex].image}
                 alt={items[lbIndex].title || "Image"}
               />
-              {items[lbIndex].title && (
-                <div className="lightbox-caption">{items[lbIndex].title}</div>
+              {(items[lbIndex]?.title ||
+                (Array.isArray(items[lbIndex]?.tech) &&
+                  items[lbIndex].tech.length) ||
+                items[lbIndex]?.demo ||
+                items[lbIndex]?.subdomain ||
+                items[lbIndex]?.url) && (
+                <div className="lightbox-meta">
+                  {items[lbIndex]?.title && (
+                    <h4 className="lightbox-title">{items[lbIndex].title}</h4>
+                  )}
+
+                  {Array.isArray(items[lbIndex]?.tech) &&
+                    items[lbIndex].tech.length > 0 && (
+                      <ul className="lightbox-tech" aria-label="Tech stack">
+                        {items[lbIndex].tech.map((t) => (
+                          <li key={t} className="lightbox-tech-item">
+                            <TechIcon name={t} size={24} />
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+
+                  {(items[lbIndex]?.demo ||
+                    items[lbIndex]?.subdomain ||
+                    items[lbIndex]?.url) && (
+                    <div className="lightbox-actions">
+                      <a
+                        className="lightbox-visit"
+                        href={
+                          items[lbIndex].demo ||
+                          items[lbIndex].subdomain ||
+                          items[lbIndex].url
+                        }
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label="Live-Demo in new Tab"
+                        title="Live-Demo"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path
+                            d="M14 3h7M10 13L21 3M21 14v7h-7M10 3H3v7M3 14v7h7"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                        <span>Try Me!</span>
+                      </a>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
             <button
@@ -533,7 +598,10 @@ function DefaultSlide({ item, onOpen }) {
     <div className="carousel-card">
       <div
         className="carousel-thumb"
-        onClick={onOpen}
+        onClick={(e) => {
+          e.stopPropagation();
+          onOpen?.();
+        }}
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {

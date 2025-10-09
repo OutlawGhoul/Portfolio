@@ -2,12 +2,12 @@
 :root {
   --bg: #ffffff;
   --text: #000000;
-  --card-bg: #a4caff;
+  --card-bg: #c1a2ff;
   --card-text: #ffffff;
-  --accent: #cfe0ff;
-  --accent-hover: #99c3ff;
-  --skill-bg: #a4caff;
-  --skill-fill: #5c6ac4;
+  --accent: #7b3eff;
+  --accent-hover: #642cd1;
+  --skill-bg: #c1a2ff;
+  --skill-fill: #5a23c8;
 
   --r-xs: 8px;
   --r-sm: 12px;
@@ -25,12 +25,12 @@
 body.dark {
   --bg: #242633;
   --text: #ffffff;
-  --card-bg: #5f9cba;
+  --card-bg: #4b2b87;
   --card-text: #ffffff;
-  --accent: #4f6dff;
-  --accent-hover: #3651cc;
-  --skill-bg: #353949;
-  --skill-fill: #5f9cba;
+  --accent: #9f6dff;
+  --accent-hover: #7f52e7;
+  --skill-bg: #2b1b50;
+  --skill-fill: #c1a2ff;
 
   --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.28);
   --shadow-md: 0 10px 24px rgba(0, 0, 0, 0.34);
@@ -335,7 +335,7 @@ main.main-content {
 }
 
 .about-cards p {
-  background: var(--card-bg);
+  background: var(--accent);
   color: var(--card-text);
   padding: 12px 16px;
   border-radius: 10px;
@@ -465,7 +465,6 @@ main.main-content {
   padding: 8px 12px;
   touch-action: pan-y;
   overscroll-behavior: contain;
-  cursor: grab;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -495,7 +494,8 @@ main.main-content {
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-  background: #fff;
+  background: var(--card-bg);
+  cursor: grab;
 }
 
 .carousel-thumb {
@@ -547,7 +547,7 @@ main.main-content {
   height: 44px;
   border: 0;
   border-radius: 999px;
-  background: #ffb100;
+  background: var(--accent);
   color: #111;
   display: flex;
   align-items: center;
@@ -560,11 +560,11 @@ main.main-content {
 }
 
 .carousel-arrow.left {
-  left: 8px;
+  left: -45px;
 }
 
 .carousel-arrow.right {
-  right: 8px;
+  right: -45px;
 }
 
 .carousel-arrow svg {
@@ -586,12 +586,12 @@ main.main-content {
   width: 10px;
   height: 10px;
   border-radius: 999px;
-  border: 2px solid #ffb100;
+  border: 2px solid var(--accent-hover);
   background: transparent;
 }
 
 .carousel-dot.is-active {
-  background: #ffb110;
+  background: var(--accent);
 }
 
 .carousel-row {
@@ -693,7 +693,7 @@ main.main-content {
   position: absolute;
   border: 0;
   border-radius: 999px;
-  background: #ffb100;
+  background: var(--accent);
   color: #111;
   cursor: pointer;
   display: grid;
@@ -740,6 +740,80 @@ main.main-content {
   display: block;
 }
 
+.lightbox-meta {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  color: #fff;
+  text-align: center;
+}
+
+.lightbox-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.lightbox-tech {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.lightbox-tech-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0;
+}
+
+.lightbox-meta,
+.lightbox-title {
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.lightbox-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox-visit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #111;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.lightbox-visit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+  background: var(--accent-hover);
+}
+
+.lightbox-visit:active {
+  transform: translateY(0);
+}
+
+.lightbox-visit svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
 /* ===== Socials ===== */
 .social-links {
   display: flex;
@@ -766,7 +840,7 @@ main.main-content {
 
 /* ===== Footer ===== */
 footer {
-  background: var(--card-bg);
+  background: var(--accent);
   color: #fff;
   padding: 12px 0;
   margin-top: 10%;

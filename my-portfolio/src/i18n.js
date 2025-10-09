@@ -28,7 +28,10 @@ const translations = {
         experienceBuildup: "Aufbautraining nach längerer Arbeitspause auf Grund von Vaterschaft.",
         experienceApprenticeship: "Ausbildung zum Informatiker EFZ in Applikationsentwicklung.",
         projectsTitle: "Projekte",
+        weatherApp: "Wetter-App",
         passwordGen: "Passwortgenerator",
+        chess: "Schach",
+        numbersys: "Zahlen Systeme",
         darkModeActive: "Dunkelmodus aktiviert",
         darkModeInactive: "Dunkelmodus deaktiviert"
     },
@@ -61,7 +64,10 @@ const translations = {
         experienceBuildup: "Development training after extended break due to fatherhood.",
         experienceApprenticeship: "Apprenticeship as IT specialist EFZ in application development.",
         projectsTitle: "Projects",
+        weatherApp: "Weather App",
         passwordGen: "Password generator",
+        chess: "Chess",
+        numbersys: "Number Systems",
         darkModeActive: "Dark mode activated",
         darkModeInactive: "Dark mode deactivated"
     },

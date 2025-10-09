@@ -3,15 +3,20 @@ import Carousel from "./ProjectsCarousel";
 import { useAppContext } from "../context/AppContext";
 import translations from "../i18n";
 
-const imageMap = import.meta.glob("/src/assets/images/*.{png,jpg,jpeg,webp,avif,svg}", {
-  eager: true,
-  as: "url",
-});
+const imageMap = import.meta.glob(
+  "/src/assets/images/*.{png,jpg,jpeg,webp,avif,svg}",
+  {
+    eager: true,
+    as: "url",
+  }
+);
 
 function resolveImg(name) {
   if (!name) return name;
   if (name.startsWith("/") || name.startsWith("http")) return name;
-  const entry = Object.entries(imageMap).find(([path]) => path.endsWith("/" + name));
+  const entry = Object.entries(imageMap).find(([path]) =>
+    path.endsWith("/" + name)
+  );
   if (entry) return entry[1];
   console.warn("Image not found:", name);
   return name;
@@ -27,6 +32,7 @@ export default function WorkSection() {
       title: "Pong",
       image: "Pong.png",
       repo: "https://github.com/OutlawGhoul/Pong",
+      demo: "https://pong.sschwarz.ch",
       tech: ["react", "css"],
     },
     {
@@ -34,13 +40,15 @@ export default function WorkSection() {
       title: "Tic-Tac-Toe",
       image: "Tic-Tac-Toe.png",
       repo: "https://github.com/OutlawGhoul/TicTacToe",
+      demo: "https://tictactoe.sschwarz.ch",
       tech: ["html", "js", "css"],
     },
     {
       id: 2,
-      title: "Wheater-App",
+      title: lang.weatherApp,
       image: "Wheater-App.png",
       repo: "https://github.com/OutlawGhoul/WeatherApp",
+      demo: "https://weatherapp.sschwarz.ch",
       tech: ["html", "js", "css"],
     },
     {
@@ -48,32 +56,55 @@ export default function WorkSection() {
       title: lang.passwordGen,
       image: "Passwordgenerator.png",
       repo: "https://github.com/OutlawGhoul/PasswordGenerator",
+      demo: "https://passwordgenerator.sschwarz.ch",
       tech: ["html", "js", "css"],
     },
     {
       id: 4,
-      title: lang.passwordGen,
-      image: "portfolio.png",
-      repo: "https://github.com/OutlawGhoul/TicTacToe",
+      title: "Beautiful-Math",
+      image: "BeautifulMath.png",
+      repo: "https://github.com/OutlawGhoul/Mandelbrot",
+      demo: "https://beautifulmath.sschwarz.ch",
       tech: ["html", "js", "css"],
     },
     {
       id: 5,
-      title: lang.passwordGen,
-      image: "portfolio.png",
+      title: "Ultimate-Tic-Tac-Toe",
+      image: "Ult-Tic-Tac-Toe.png",
       repo: "https://github.com/OutlawGhoul/ultimate-tic-tac-toe",
+      demo: "https://ultimatetictactoe.sschwarz.ch",
       tech: ["html", "js", "css"],
     },
     {
       id: 6,
-      title: lang.passwordGen,
-      image: "portfolio.png",
+      title: "Snake",
+      image: "Snake.png",
       repo: "https://github.com/OutlawGhoul/Snake",
+      demo: "https://snake.sschwarz.ch",
+      tech: ["html", "js", "css"],
+    },
+    {
+      id: 7,
+      title: lang.chess,
+      image: "Chess.png",
+      repo: "https://github.com/OutlawGhoul/Chess",
+      demo: "https://chess.sschwarz.ch",
+      tech: ["html", "js", "css"],
+    },
+    {
+      id: 8,
+      title: lang.numbersys,
+      image: "NumberSys.png",
+      repo: "https://github.com/OutlawGhoul/NumberSystem",
+      demo: "https://numbersystems.sschwarz.ch",
       tech: ["html", "js", "css"],
     },
   ];
 
-  const projectsResolved = projects.map(p => ({ ...p, image: resolveImg(p.image) }));
+  const projectsResolved = projects.map((p) => ({
+    ...p,
+    image: resolveImg(p.image),
+  }));
 
   return (
     <section className="work-section container" id="work">
