@@ -1,9 +1,10 @@
 import React from "react";
 import Carousel from "./ProjectsCarousel";
 import { useAppContext } from "../context/AppContext";
-import translations from "../i18n";
+import translations, { TranslationSet } from "../i18n";
+import type { ProjectItem } from "@/types/projects";
 
-const imageMap = import.meta.glob(
+const imageMap = import.meta.glob<string>(
   "/src/assets/images/*.{png,jpg,jpeg,webp,avif,svg}",
   {
     eager: true,
@@ -11,7 +12,7 @@ const imageMap = import.meta.glob(
   }
 );
 
-function resolveImg(name) {
+function resolveImg(name: string): string {
   if (!name) return name;
   if (name.startsWith("/") || name.startsWith("http")) return name;
   const entry = Object.entries(imageMap).find(([path]) =>
@@ -24,9 +25,9 @@ function resolveImg(name) {
 
 export default function WorkSection() {
   const { language } = useAppContext();
-  const lang = translations[language];
+  const lang: TranslationSet = translations[language];
 
-  const projects = [
+  const projects: ProjectItem[] = [
     {
       id: 0,
       title: "Pong",
@@ -65,7 +66,7 @@ export default function WorkSection() {
       image: "BeautifulMath.png",
       repo: "https://github.com/OutlawGhoul/Mandelbrot",
       demo: "https://beautifulmath.sschwarz.ch",
-      tech: ["html", "js", "css"],
+      tech: ["react", "css"],
     },
     {
       id: 5,
@@ -73,7 +74,7 @@ export default function WorkSection() {
       image: "Ult-Tic-Tac-Toe.png",
       repo: "https://github.com/OutlawGhoul/ultimate-tic-tac-toe",
       demo: "https://ultimatetictactoe.sschwarz.ch",
-      tech: ["html", "js", "css"],
+      tech: ["react", "css"],
     },
     {
       id: 6,
@@ -81,7 +82,7 @@ export default function WorkSection() {
       image: "Snake.png",
       repo: "https://github.com/OutlawGhoul/Snake",
       demo: "https://snake.sschwarz.ch",
-      tech: ["html", "js", "css"],
+      tech: ["react", "css"],
     },
     {
       id: 7,
@@ -89,7 +90,7 @@ export default function WorkSection() {
       image: "Chess.png",
       repo: "https://github.com/OutlawGhoul/Chess",
       demo: "https://chess.sschwarz.ch",
-      tech: ["html", "js", "css"],
+      tech: ["react", "css"],
     },
     {
       id: 8,
@@ -97,11 +98,11 @@ export default function WorkSection() {
       image: "NumberSys.png",
       repo: "https://github.com/OutlawGhoul/NumberSystem",
       demo: "https://numbersystems.sschwarz.ch",
-      tech: ["html", "js", "css"],
+      tech: ["react", "css"],
     },
   ];
 
-  const projectsResolved = projects.map((p) => ({
+  const projectsResolved: ProjectItem[] = projects.map((p) => ({
     ...p,
     image: resolveImg(p.image),
   }));

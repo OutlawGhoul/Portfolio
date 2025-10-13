@@ -1,4 +1,44 @@
-const translations = {
+export type Language = "de" | "en";
+
+export type TranslationKeys =
+    | "about"
+    | "skills"
+    | "contact"
+    | "name"
+    | "email"
+    | "message"
+    | "submit"
+    | "copy"
+    | "copied"
+    | "success"
+    | "copyright"
+    | "age"
+    | "location"
+    | "experience"
+    | "profile"
+    | "yearsOld"
+    | "months"
+    | "webdev"
+    | "titleBio"
+    | "navBio"
+    | "bio"
+    | "titleExperience"
+    | "buildup"
+    | "apprenticeship"
+    | "today"
+    | "experienceBuildup"
+    | "experienceApprenticeship"
+    | "projectsTitle"
+    | "weatherApp"
+    | "passwordGen"
+    | "chess"
+    | "numbersys"
+    | "darkModeActive"
+    | "darkModeInactive";
+
+export type TranslationSet = Record<TranslationKeys, string>;
+
+const translations: Record<Language, TranslationSet> = {
     de: {
         about: "Über mich",
         skills: "Skills",

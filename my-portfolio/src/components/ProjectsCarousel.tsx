@@ -4,50 +4,67 @@ import React, {
   useRef,
   useState,
   useCallback,
+  KeyboardEvent,
+  MouseEvent,
+  PointerEvent,
+  TouchEvent,
 } from "react";
 import { createPortal } from "react-dom";
 import TechIcon from "./TechIcon";
+import type { ProjectItem } from "@/types/projects";
 
-const CLONES = 2;
+export type CarouselProps<T extends ProjectItem = ProjectItem> = {
+  items: T[];
+  renderSlide?: (
+    item: T,
+    realIndex: number,
+    open: () => void
+  ) => React.ReactNode;
+  autoPlay?: boolean;
+  ariaLabel?: string;
+};
+
+const CLONES = 2 as const;
 const AUTOPLAY_MS = 4500;
 const DRAG_THRESHOLD = 6;
 
-export default function Carousel({
+export default function Carousel<T extends ProjectItem = ProjectItem>({
   items = [],
   renderSlide,
   autoPlay = true,
   ariaLabel = "Carousel",
-}) {
+}: CarouselProps<T>) {
   const n = items.length;
   const [active, setActive] = useState(0);
   const [ready, setReady] = useState(false);
-  const wrapRef = useRef(null);
-  const trackRef = useRef(null);
+
+  const wrapRef = useRef<HTMLElement | null>(null);
+  const trackRef = useRef<HTMLDivElement | null>(null);
   const slideWRef = useRef(0);
 
   // Interaction
   const hoverRef = useRef(false);
   const focusRef = useRef(false);
-  const autoplayRef = useRef(0);
-  const activeCardRef = useRef(null);
+  const autoplayRef = useRef<number | null>(0);
+  const activeCardRef = useRef<HTMLDivElement | null>(null);
 
   // Drag
   const draggingRef = useRef(false);
   const startXRef = useRef(0);
   const lastXRef = useRef(0);
   const movedRef = useRef(false);
-  const animRef = useRef(0);
+  const animRef = useRef<number | null>(0);
   const avoidClickRef = useRef(false);
 
   // Lightbox
   const [lbOpen, setLbOpen] = useState(false);
   const [lbIndex, setLbIndex] = useState(0);
-  const lightboxRef = useRef(null);
-  const closeBtnRef = useRef(null);
-  const lastFocusedRef = useRef(null);
+  const lightboxRef = useRef<HTMLDivElement | null>(null);
+  const closeBtnRef = useRef<HTMLButtonElement | null>(null);
+  const lastFocusedRef = useRef<Element | null>(null);
 
   // Array + Clones
-  const loopData = useMemo(() => {
+  const loopData: T[] = useMemo(() => {
     if (!n) return [];
     const head = items.slice(0, CLONES);
     const tail = items.slice(-CLONES);
@@ -55,26 +72,27 @@ export default function Carousel({
   }, [items, n]);
 
   const virtualToReal = useCallback(
-    (vi) => {
+    (vi: number) => {
       return ((vi % n) + n) % n;
     },
     [n]
   );
 
-  const realToVirtual = (ri) => {
+  const realToVirtual = (ri: number) => {
     return ri + CLONES;
   };
 
   const updateSlideWidth = useCallback(() => {
     const track = trackRef.current;
-    const firstSlide = track?.querySelector(".carousel-slide");
+    const firstSlide = track?.querySelector<HTMLElement>(".carousel-slide");
     if (!firstSlide || !track) return;
     const style = getComputedStyle(track);
-    const gap = parseFloat(style.columnGap || style.gap || "0") || 0;
+    const gap =
+      parseFloat((style as any).columnGap || (style as any).gap || "0") || 0;
     slideWRef.current = firstSlide.getBoundingClientRect().width + gap;
   }, []);
 
-  const jumpToVirtualIndex = useCallback((vi, smooth = true) => {
+  const jumpToVirtualIndex = useCallback((vi: number, smooth = true) => {
     const track = trackRef.current;
     if (!track) return;
     const x = vi * slideWRef.current;
@@ -82,11 +100,10 @@ export default function Carousel({
     track.scrollLeft = x;
   }, []);
 
-  const getVirtualIndex = useCallback(() => {
+  const getVirtualIndex = useCallback((): number => {
     const track = trackRef.current;
     if (!track || !slideWRef.current) return realToVirtual(active);
-    const vi = Math.round(track.scrollLeft / slideWRef.current);
-    return vi;
+    return Math.round(track.scrollLeft / slideWRef.current);
   }, [active]);
 
   const normalizeIfCloned = useCallback(() => {
@@ -124,21 +141,22 @@ export default function Carousel({
   }, [getVirtualIndex, jumpToVirtualIndex, n]);
 
   const goToReal = useCallback(
-    (ri) => {
+    (ri: number) => {
       if (!n) return;
       jumpToVirtualIndex(realToVirtual(ri), true);
     },
     [jumpToVirtualIndex, n]
   );
 
-  const canStartDrag = (target) => {
-    const card = target.closest?.(".carousel-card");
-    const onImage = target.closest?.("carousel-thumb");
+  const canStartDrag = (target: EventTarget | null): boolean => {
+    const el = target as Element | null;
+    const card = el?.closest?.(".carousel-card");
+    const onImage = el?.closest?.(".carousel-thumb");
     return !!card && !onImage;
   };
 
   // Lightbox
-  const openLightbox = useCallback((ri) => {
+  const openLightbox = useCallback((ri: number) => {
     lastFocusedRef.current = document.activeElement;
     setLbIndex(ri);
     setLbOpen(true);
@@ -157,7 +175,7 @@ export default function Carousel({
   }, [n]);
 
   const handleOpen = useCallback(
-    (ri) => {
+    (ri: number) => {
       if (avoidClickRef.current) return;
       openLightbox(ri);
     },
@@ -166,6 +184,7 @@ export default function Carousel({
 
   useEffect(() => {
     const rootSection = wrapRef.current;
+    if (!rootSection) return;
     if (lbOpen) {
       const prevOverflow = document.body.style.overflow;
       document.body.style.overflow = "hidden";
@@ -180,14 +199,14 @@ export default function Carousel({
         document.body.style.overflow = prevOverflow;
         rootSection.removeAttribute("aria-hidden");
         rootSection.removeAttribute("inert");
-        lastFocusedRef.current?.focus?.();
+        (lastFocusedRef.current as HTMLElement | null)?.focus?.();
       };
     }
   }, [lbOpen]);
 
-  const trapFocus = useCallback((e) => {
+  const trapFocus = useCallback((e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key !== "Tab" || !lightboxRef.current) return;
-    const focusables = lightboxRef.current.querySelectorAll(
+    const focusables = lightboxRef.current.querySelectorAll<HTMLElement>(
       'a, button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
     const list = Array.from(focusables).filter(
@@ -243,7 +262,7 @@ export default function Carousel({
     track.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       track.removeEventListener("scroll", onScroll);
-      cancelAnimationFrame(animRef.current);
+      if (animRef.current) cancelAnimationFrame(animRef.current);
     };
   }, [normalizeIfCloned, updateActiveFromScroll]);
 
@@ -254,8 +273,13 @@ export default function Carousel({
       if (hoverRef.current || focusRef.current || document.hidden) return;
       next();
     };
-    autoplayRef.current = window.setInterval(tick, AUTOPLAY_MS);
-    return () => window.clearInterval(autoplayRef.current);
+    autoplayRef.current = window.setInterval(
+      tick,
+      AUTOPLAY_MS
+    ) as unknown as number;
+    return () => {
+      if (autoplayRef.current) window.clearInterval(autoplayRef.current);
+    };
   }, [autoPlay, n, next]);
 
   // Hover / Focus
@@ -269,33 +293,46 @@ export default function Carousel({
     const track = trackRef.current;
     if (!track) return;
 
-    const onPointerDown = (e) => {
-      if ((e.button ?? 0) !== 0) return;
+    const onPointerDown = (e: PointerEvent | TouchEvent | any) => {
+      const button = (e as PointerEvent).button ?? 0;
+      if (button !== 0) return;
       if (!canStartDrag(e.target)) return;
-      const card = e.target.closest(".carousel-card");
+
+      const card = (e.target as Element)?.closest?.(
+        ".carousel-card"
+      ) as HTMLDivElement | null;
       activeCardRef.current = card;
       card?.classList.add("is-dragging");
+
       draggingRef.current = true;
       movedRef.current = false;
-      const x = e.clientX ?? 0;
+
+      const x = (
+        "clientX" in e ? e.clientX : e.touches?.[0]?.clientX ?? 0
+      ) as number;
       startXRef.current = x;
       lastXRef.current = x;
-      track.setPointCapture?.(e.pointerId);
+
+      (track as any).setPointerCapture?.(e.pointerId);
       track.classList.add("carousel-dragging");
     };
-    const onPointerMove = (e) => {
+
+    const onPointerMove = (e: PointerEvent | TouchEvent | any) => {
       if (!draggingRef.current) return;
-      const x = e.clientX ?? 0;
+      const x = (
+        "clientX" in e ? e.clientX : e.touches?.[0]?.clientX ?? 0
+      ) as number;
       const dx = x - lastXRef.current;
       if (Math.abs(x - startXRef.current) > DRAG_THRESHOLD)
         movedRef.current = true;
       track.scrollLeft -= dx;
       lastXRef.current = x;
     };
-    const onPointerUpOrCancel = (e) => {
+
+    const onPointerUpOrCancel = (e: PointerEvent | TouchEvent | any) => {
       if (!draggingRef.current) return;
       draggingRef.current = false;
-      track.releasePointerCapture?.(e.pointerId);
+      (track as any).releasePointerCapture?.(e.pointerId);
       track.classList.remove("carousel-dragging");
       if (movedRef.current) {
         avoidClickRef.current = true;
@@ -303,27 +340,34 @@ export default function Carousel({
         normalizeIfCloned();
         updateActiveFromScroll();
       }
+      activeCardRef.current?.classList.remove("is-dragging");
     };
 
-    track.addEventListener("pointerdown", onPointerDown);
-    window.addEventListener("pointermove", onPointerMove, { passive: true });
-    window.addEventListener("pointerup", onPointerUpOrCancel);
-    track.addEventListener("touchstart", onPointerDown, { passive: true });
-    window.addEventListener("touchmove", onPointerMove, { passive: true });
-    window.addEventListener("touchend", onPointerUpOrCancel);
+    track.addEventListener("pointerdown", onPointerDown as any);
+    window.addEventListener("pointermove", onPointerMove as any, {
+      passive: true,
+    });
+    window.addEventListener("pointerup", onPointerUpOrCancel as any);
+    track.addEventListener("touchstart", onPointerDown as any, {
+      passive: true,
+    });
+    window.addEventListener("touchmove", onPointerMove as any, {
+      passive: true,
+    });
+    window.addEventListener("touchend", onPointerUpOrCancel as any);
 
     return () => {
-      track.removeEventListener("pointerdown", onPointerDown);
-      window.removeEventListener("pointermove", onPointerMove);
-      window.removeEventListener("pointerup", onPointerUpOrCancel);
-      track.removeEventListener("touchstart", onPointerDown);
-      window.removeEventListener("touchmove", onPointerMove);
-      window.removeEventListener("touchend", onPointerUpOrCancel);
+      track.removeEventListener("pointerdown", onPointerDown as any);
+      window.removeEventListener("pointermove", onPointerMove as any);
+      window.removeEventListener("pointerup", onPointerUpOrCancel as any);
+      track.removeEventListener("touchstart", onPointerDown as any);
+      window.removeEventListener("touchmove", onPointerMove as any);
+      window.removeEventListener("touchend", onPointerUpOrCancel as any);
     };
   }, [normalizeIfCloned, updateActiveFromScroll]);
 
   // Keyboard
-  const onKeyDown = (e) => {
+  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "ArrowLeft") {
       e.preventDefault();
       if (lbOpen) lbPrev();
@@ -356,7 +400,7 @@ export default function Carousel({
   return (
     <>
       <section
-        ref={wrapRef}
+        ref={wrapRef as React.RefObject<HTMLElement>}
         className="carousel-wrap"
         role="region"
         aria-roledescription="carousel"
@@ -463,7 +507,7 @@ export default function Carousel({
             aria-modal="true"
             aria-label="Image view"
             tabIndex={-1}
-            onClick={(e) => {
+            onClick={(e: MouseEvent<HTMLDivElement>) => {
               if (e.target === e.currentTarget) closeLightbox();
             }}
             onKeyDown={trapFocus}
@@ -527,7 +571,7 @@ export default function Carousel({
                       <ul className="lightbox-tech" aria-label="Tech stack">
                         {items[lbIndex].tech.map((t) => (
                           <li key={t} className="lightbox-tech-item">
-                            <TechIcon name={t} size={24} />
+                            <TechIcon name={t} label={t} size={24} />
                           </li>
                         ))}
                       </ul>
@@ -593,7 +637,13 @@ export default function Carousel({
   );
 }
 
-function DefaultSlide({ item, onOpen }) {
+function DefaultSlide<T extends ProjectItem>({
+  item,
+  onOpen,
+}: {
+  item: T;
+  onOpen?: () => void;
+}) {
   return (
     <div className="carousel-card">
       <div
@@ -672,7 +722,7 @@ function DefaultSlide({ item, onOpen }) {
           <ul className="tech-icons">
             {item.tech.map((t) => (
               <li key={t} className="tech-item">
-                <TechIcon name={t} size={22} />
+                <TechIcon name={t} label={t} size={22} />
               </li>
             ))}
           </ul>

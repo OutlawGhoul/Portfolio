@@ -6,11 +6,22 @@ import React, {
   useMemo,
 } from "react";
 
-const AppContext = createContext(null);
+export type Language = "de" | "en";
 
-export const AppProvider = ({ children }) => {
+type AppContextType = {
+  darkMode: boolean;
+  setDarkMode: React.Dispatch<React.SetStateAction<boolean>>;
+  language: Language;
+  setLanguage: React.Dispatch<React.SetStateAction<Language>>;
+};
+
+const AppContext = createContext<AppContextType | null>(null);
+
+export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [darkMode, setDarkMode] = useState(false);
-  const [language, setLanguage] = useState("de");
+  const [language, setLanguage] = useState<Language>("de");
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -46,5 +57,8 @@ export const AppProvider = ({ children }) => {
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const useAppContext = () => useContext(AppContext);
+export const useAppContext = () => {
+  const ctx = useContext(AppContext);
+  if (!ctx) throw new Error("useAppContext must be used within <AppProvider>");
+  return ctx;
+};

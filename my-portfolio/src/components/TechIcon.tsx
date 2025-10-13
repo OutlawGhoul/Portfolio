@@ -1,5 +1,5 @@
-// TechIcon.jsx
 import React from "react";
+import type { IconType } from "react-icons";
 import {
   SiReact,
   SiJavascript,
@@ -14,7 +14,32 @@ import {
   SiLinkedin,
 } from "react-icons/si";
 
-const MAP = {
+export type TechName =
+  | "react"
+  | "javascript"
+  | "js"
+  | "html"
+  | "html5"
+  | "css"
+  | "css3"
+  | "node"
+  | "nodejs"
+  | "node.js"
+  | "vite"
+  | "git"
+  | "gh"
+  | "github"
+  | "php"
+  | "laravel"
+  | "linkedin";
+
+type TechIconProps = {
+  name?: string;
+  label?: string;
+  size?: number;
+};
+
+const MAP: Record<TechName, IconType> = {
   react: SiReact,
 
   javascript: SiJavascript,
@@ -42,7 +67,7 @@ const MAP = {
   linkedin: SiLinkedin,
 };
 
-const CANON = {
+const CANON: Record<TechName, string> = {
   react: "react",
   javascript: "js",
   js: "js",
@@ -52,6 +77,7 @@ const CANON = {
   css: "css",
   nodejs: "node",
   node: "node",
+  "node.js": "node",
   vite: "vite",
   github: "git",
   gh: "git",
@@ -61,13 +87,13 @@ const CANON = {
   linkedin: "linkedin",
 };
 
-const norm = (name) =>
+const norm = (name?: string): string =>
   String(name ?? "")
     .trim()
     .toLowerCase();
 
-export default function TechIcon({ name, label, size = 18 }) {
-  const key = norm(name);
+const TechIcon: React.FC<TechIconProps> = ({ name, label, size = 18 }) => {
+  const key = norm(name) as TechName;
   const Icon = MAP[key];
   const canon = CANON[key] ?? key;
 
@@ -91,4 +117,6 @@ export default function TechIcon({ name, label, size = 18 }) {
       data-name={canon}
     />
   );
-}
+};
+
+export default TechIcon;
