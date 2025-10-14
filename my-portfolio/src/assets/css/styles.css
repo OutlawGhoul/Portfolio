@@ -1,6 +1,4 @@
-@import "tailwindcss";
-
-/* ===== Root ===== */
+/* Root */
 :root {
   --bg: #ffffff;
   --text: #000000;
@@ -22,6 +20,19 @@
 
   --t-fast: 180ms;
   --t-mid: 260ms;
+
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body.dark {
@@ -71,7 +82,7 @@ body.dark {
   color: #ff2d20;
 }
 
-/* ===== Reset ===== */
+/* Reset */
 * {
   margin: 0;
   padding: 0;
@@ -89,6 +100,10 @@ body {
   background-color: var(--bg);
   color: var(--text);
   line-height: 1.6;
+  margin: 0;
+  display: flex;
+  min-width: 320px;
+  min-height: 100dvh;
 }
 
 img {
@@ -97,7 +112,7 @@ img {
   display: block;
 }
 
-/* ===== Top-Controls ===== */
+/* Top-Controls */
 .page-top-controls {
   position: fixed;
   top: 20px;
@@ -107,7 +122,7 @@ img {
   z-index: 2000;
 }
 
-/* ===== Language Toggle ===== */
+/* Language Toggle */
 .lang-toggle {
   display: inline-flex;
   align-items: center;
@@ -134,7 +149,7 @@ body.dark .lang-toggle {
   border-color: #fff;
 }
 
-/* ===== Theme Toggle ===== */
+/* Theme Toggle */
 .theme-toggle {
   --w: 54px;
   --h: 28px;
@@ -190,9 +205,7 @@ body.dark .lang-toggle {
   content: "🌙";
 }
 
-/* ========== Layout ========== */
-
-/* ===== Sidebar ===== */
+/* Sidebar */
 .sidebar {
   position: fixed;
   inset: 0 auto 0 0;
@@ -260,18 +273,21 @@ body.dark .lang-toggle {
   display: none;
 }
 
-/* ==== Main Layout ===== */
+/* Main Layout */
 main.main-content {
-  margin-left: 320px;
+  min-height: 100dvh;
+  display: flex;
+  margin-left: 0;
   padding: 3.5rem 8vw;
 }
 
 .container {
   max-width: 1200px;
-  margin: 0 auto;
+  margin: auto;
+  overflow: visible;
 }
 
-/* ===== Bio ===== */
+/* Bio */
 .bio-section {
   display: flex;
   justify-content: space-between;
@@ -320,7 +336,7 @@ main.main-content {
   border-radius: 14px;
 }
 
-/* ===== About ===== */
+/* About */
 .about-section {
   margin: 28px 0 8px;
 }
@@ -352,10 +368,10 @@ main.main-content {
 
 .about-cards p strong {
   font-weight: 700;
-  color: #ffffff;
+  color: #fff;
 }
 
-/* ===== Experience ===== */
+/* Experience */
 .experience-section {
   max-width: 900px;
   margin: 48px 0 8px;
@@ -371,7 +387,7 @@ main.main-content {
   margin-left: 1.5rem;
 }
 
-/* ===== Skills ===== */
+/* Skills */
 #skills {
   max-width: 900px;
   margin: 40px 0;
@@ -407,7 +423,7 @@ main.main-content {
   background: linear-gradient(
     90deg,
     var(--skill-fill),
-    color-mix(in oklab, var(--skill-fill), #ffffff 14%)
+    color-mix(in srgb, var(--skill-fill), #ffffff 14%)
   );
   width: var(--target-width, 0%);
   border-radius: 999px;
@@ -453,9 +469,10 @@ main.main-content {
   opacity: 0.8;
 }
 
-/* ===== Carousel ===== */
+/* Carousel */
 .carousel-wrap {
   position: relative;
+  overflow: visible;
 }
 
 .carousel-track {
@@ -464,7 +481,7 @@ main.main-content {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
-  padding: 8px 12px;
+  padding: 8px;
   touch-action: pan-y;
   overscroll-behavior: contain;
   scrollbar-width: none;
@@ -483,7 +500,7 @@ main.main-content {
 
 .carousel-slide {
   flex: 0 0 80%;
-  max-width: 680px;
+  max-width: 1200px;
   scroll-snap-align: center;
   scroll-snap-stop: always;
   user-select: none;
@@ -558,7 +575,7 @@ main.main-content {
   padding: 0;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
   cursor: pointer;
-  z-index: 5;
+  z-index: 10;
 }
 
 .carousel-arrow.left {
@@ -656,7 +673,7 @@ main.main-content {
   border: 0;
 }
 
-/* ===== Lightbox ===== */
+/* Lightbox */
 .lightbox {
   position: fixed;
   inset: 0;
@@ -816,7 +833,7 @@ main.main-content {
   display: block;
 }
 
-/* ===== Socials ===== */
+/* Socials */
 .social-links {
   display: flex;
   align-items: center;
@@ -840,12 +857,14 @@ main.main-content {
   box-shadow: var(--shadow-md);
 }
 
-/* ===== Footer ===== */
+/* Footer */
 footer {
+  display: block;
+  width: 100%;
   background: var(--accent);
   color: #fff;
   padding: 12px 0;
-  margin-top: 10%;
+  margin-top: 5%;
   font-size: 0.95rem;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
@@ -911,18 +930,70 @@ footer a {
   pointer-events: none;
 }
 
-/* ===== Focus States ===== */
+/* Focus States */
 :where(a, button, .carousel-arrow):focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
   border-radius: 10px;
 }
 
-/* ===== Responsive ===== */
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+
+a:hover {
+  color: #535bf2;
+}
+
+h1 {
+  font-size: 3.2rem;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6rem 1.2rem;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+button:hover {
+  border-color: #646cff;
+}
+
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    /*
+    color: #213547;
+    background-color: #ffffff;
+    */
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+/* Responsive */
 @media (max-width: 1024px) {
   main.main-content {
     margin-left: 0;
     padding: 3.5rem 6vw;
+    height: 90vh;
   }
 
   .mobile-toggle {
@@ -957,6 +1028,18 @@ footer a {
 
   .carousel-slide {
     flex-basis: 44%;
+  }
+
+  .carousel-arrow.left {
+    left: 16px;
+  }
+
+  .carousel-arrow.right {
+    right: 16px;
+  }
+
+  footer {
+    height: 10vh;
   }
 }
 
@@ -1026,6 +1109,10 @@ footer a {
 
   .carousel-slide {
     flex-basis: 56%;
+  }
+
+  footer {
+    margin-top: 20vh;
   }
 }
 

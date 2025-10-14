@@ -8,7 +8,8 @@ const imageMap = import.meta.glob<string>(
   "/src/assets/images/*.{png,jpg,jpeg,webp,avif,svg}",
   {
     eager: true,
-    as: "url",
+    as: "?url",
+    import: "default",
   }
 );
 
@@ -108,7 +109,7 @@ export default function WorkSection() {
   }));
 
   return (
-    <section className="work-section container" id="work">
+    <section className="container work-section" id="work">
       <h2>{lang.projectsTitle}</h2>
       <Carousel items={projectsResolved} />
     </section>
