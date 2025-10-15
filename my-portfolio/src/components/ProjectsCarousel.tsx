@@ -150,6 +150,14 @@ export default function Carousel<T extends ProjectItem = ProjectItem>({
 
   const canStartDrag = (target: EventTarget | null): boolean => {
     const el = target as Element | null;
+    if (!el) return false;
+    if (
+      el.closest(
+        'a, button, input, textarea, select, [role="button"], [role="tab"], [data-no-drag]'
+      )
+    ) {
+      return false;
+    }
     const card = el?.closest?.(".carousel-card");
     const onImage = el?.closest?.(".carousel-thumb");
     return !!card && !onImage;
@@ -679,12 +687,13 @@ function DefaultSlide<T extends ProjectItem>({
           {item?.repo && (
             <a
               className="repo-link"
-              //target="_blank"
+              target="_blank"
               href={item.repo}
-              onClick={() => window.open(item.repo, "_blank")}
-              rel="noopener noreferrer"
+              rel="noreferrer"
               aria-label={`${item.title} Repository öffnen`}
               title="Repository"
+              data-no-drag
+              onClick={(e) => e.stopPropagation()}
             >
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 {/* Left */}

@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { useAppContext } from "../context/AppContext";
-import ThemeToggle from "./ThemeToggle";
-import LanguageToggle from "./LanguageToggle";
 import SidebarNav from "./SidebarNav";
 import profilePic from "/src/assets/images/Profilbild.jpg";
 import SocialLinks from "./SocialLinks";
@@ -47,11 +45,6 @@ const Sidebar = () => {
         role="navigation"
         aria-label="Sidebar navigation"
       >
-        <div className="top-controls">
-          <LanguageToggle />
-          <ThemeToggle />
-        </div>
-
         <div className="profile">
           <img src={profilePic} alt="Profil" className="profile-img" />
           <h1 className="profile-name">Steven Schwarz</h1>

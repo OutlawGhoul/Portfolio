@@ -223,13 +223,6 @@ body.dark .lang-toggle {
   pointer-events: none;
 }
 
-.sidebar .top-controls {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  margin-bottom: 2rem;
-}
-
 .profile {
   text-align: center;
   margin-bottom: 2rem;
@@ -374,19 +367,19 @@ main.main-content {
 }
 
 /* Experience */
-.experience-section {
-  max-width: 900px;
+#experience {
+  max-width: 100vw;
   margin: 48px 0 8px;
 }
 
-.experience-section h2 {
+#experience h2 {
   font-size: 2rem;
   margin-bottom: 1rem;
 }
 
-.experience-section ul li {
+#experience ul li {
   margin-bottom: 1rem;
-  margin-left: 1.5rem;
+  margin-left: 1rem;
 }
 
 /* Skills */
@@ -603,16 +596,34 @@ main.main-content {
   padding: 0;
 }
 
+.carousel-dots li {
+  display: inline-block;
+}
+
 .carousel-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
+  position: relative;
+  display: block;
+  width: 25px;
+  height: 25px;
+  padding: 0;
   border: 2px solid var(--accent-hover);
+  border-radius: 50%;
   background: transparent;
+  cursor: pointer;
+  line-height: 0;
+  transition: background var(--t-fast) ease, transform var(--t-fast) ease,
+    border-color var(--t-fast) ease;
 }
 
 .carousel-dot.is-active {
   background: var(--accent);
+  border-color: var(--accent);
+  transform: scale(1.05);
+}
+
+.carousel-dot:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .carousel-row {
@@ -623,13 +634,29 @@ main.main-content {
 }
 
 .repo-link {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+  color: #111;
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  color: #111;
-  border-radius: 50%;
+  z-index: 2;
+  transition: transform var(--t-fast) ease, box-shadow var(--t-fast) ease,
+    background var(--t-fast) ease;
+}
+
+body.dark .repo-link {
+  background: #0f1020;
+  color: #fff;
+}
+
+.repo-link:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .repo-link svg {
@@ -641,7 +668,7 @@ main.main-content {
 .tech-icons {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 10px;
+  gap: 0;
   margin: 6px 0 0;
   padding: 0;
   list-style: none;
@@ -995,7 +1022,7 @@ button:focus-visible {
   main.main-content {
     margin-left: 0;
     padding: 3.5rem 6vw;
-    height: 90vh;
+    height: 100vh;
   }
 
   .mobile-toggle {
@@ -1032,6 +1059,10 @@ button:focus-visible {
     flex-basis: 44%;
   }
 
+  .carousel-title {
+    font-size: 1rem;
+  }
+
   .carousel-arrow.left {
     left: 16px;
   }
@@ -1042,6 +1073,7 @@ button:focus-visible {
 
   footer {
     height: 10vh;
+    margin-bottom: 5vh;
   }
 }
 
@@ -1113,12 +1145,20 @@ button:focus-visible {
     flex-basis: 56%;
   }
 
+  .carousel-title {
+    font-size: 1.05rem;
+  }
+
   footer {
-    margin-top: 20vh;
+    height: auto;
+    margin-top: 10vh;
   }
 }
 
 @media (max-width: 640px) {
+  .carousel-title {
+    font-size: 0.9rem;
+  }
   .lightbox {
     padding: 12px;
   }
