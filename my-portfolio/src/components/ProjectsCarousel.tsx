@@ -679,9 +679,10 @@ function DefaultSlide<T extends ProjectItem>({
           {item?.repo && (
             <a
               className="repo-link"
+              //target="_blank"
               href={item.repo}
-              target="_blank"
-              rel="noreferrer"
+              onClick={() => window.open(item.repo, "_blank")}
+              rel="noopener noreferrer"
               aria-label={`${item.title} Repository öffnen`}
               title="Repository"
             >
